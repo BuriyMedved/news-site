@@ -1,0 +1,108 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+//    dependencies {
+//        classpath "org.springframework.boot:spring-boot-gradle-plugin:3.1.5"
+//        classpath("com.vaadin:vaadin-gradle-plugin:24.4.12")
+//        classpath("io.spring.gradle:dependency-management-plugin:1.0.15.RELEASE")
+//        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22'
+//        classpath 'org.jetbrains.kotlin:kotlin-noarg:1.9.22'
+//        classpath 'org.jetbrains.kotlin:kotlin-allopen:1.9.22'
+//    }
+}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.2'
+    id 'com.vaadin'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id("org.jetbrains.kotlin.jvm") version "2.1.10"
+//    id 'kotlin'
+    id("org.jetbrains.kotlin.plugin.jpa") version "2.1.10"
+    id("org.jetbrains.kotlin.plugin.spring") version "2.1.10"
+    id("org.jetbrains.kotlin.plugin.allopen") version "2.1.10"
+}
+
+group = 'org.buriy.medved'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+java {
+    targetCompatibility = 20
+    sourceCompatibility = 20
+}
+
+vaadin{
+    optimizeBundle = true
+    productionMode = true
+}
+
+bootRun{
+    jvmArgs = ['-Dspring.profiles.active=prod']
+}
+
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Embeddable")
+    annotation("jakarta.persistence.ElementCollection")
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    developmentOnly 'com.vaadin:vaadin-spring-boot-starter'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    implementation 'com.vaadin:vaadin-spring-boot-starter:24.4.12'
+    implementation 'com.vaadin:vaadin-core:24.4.12'
+    implementation 'com.vaadin:vaadin-board-flow:24.4.12'
+    implementation 'com.vaadin:vaadin-charts-flow:24.4.12'
+    implementation 'com.vaadin:vaadin-map-flow:24.4.12'
+    implementation 'com.vaadin:vaadin-rich-text-editor-flow:24.4.12'
+
+    implementation 'org.parttio:line-awesome:2.0.0'
+    implementation 'org.postgresql:postgresql:42.7.4'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc:3.1.5'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.3.3'
+    implementation 'org.springframework.security:spring-security-web:6.1.5'
+    implementation 'org.springframework.security:spring-security-config:6.1.5'
+    implementation 'org.apache.logging.log4j:log4j-core:2.22.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.22.0'
+    implementation 'org.apache.logging.log4j:log4j-1.2-api:2.22.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+//	implementation('com.vaadin:flow-server:24.5.0')
+    implementation'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.3'
+    implementation 'com.itextpdf:itext-core:8.0.4'
+    implementation 'org.apache.groovy:groovy:4.0.24'
+    implementation 'commons-beanutils:commons-beanutils:1.9.4'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "com.vaadin:vaadin-bom:$vaadinVersion"
+    }
+}
+kotlin {
+    jvmToolchain(20)
+}
+
+//tasks.test{
+//    useJUnitPlatform()
+//}
+
+test {
+    useJUnitPlatform()
+}

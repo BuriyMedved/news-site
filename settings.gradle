@@ -1,0 +1,31 @@
+
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    plugins {
+        id 'com.vaadin' version "${vaadinVersion}"
+    }
+}
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+
+        dependencies {
+            classpath "org.gradle.toolchains:foojay-resolver:0.8.0"
+        }
+    }
+}
+
+apply plugin: "org.gradle.toolchains.foojay-resolver-convention"
+
+rootProject.name = "news-site"
+include 'modules:comments'
+findProject(':modules:comments')?.name = 'comments'
+include 'modules:web-core'
+findProject(':modules:web-core')?.name = 'web-core'
+
