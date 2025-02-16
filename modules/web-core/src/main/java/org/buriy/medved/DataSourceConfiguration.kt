@@ -3,7 +3,9 @@ package org.buriy.medved
 import jakarta.annotation.PostConstruct
 import jakarta.persistence.EntityManagerFactory
 import org.apache.logging.log4j.LogManager
+import org.buriy.medved.config.YamlConfig
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
@@ -30,7 +32,9 @@ import javax.sql.DataSource
 //)
 @EnableTransactionManagement
 
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:application.yml")
+//@PropertySource("classpath:application.properties")
+//@EnableConfigurationProperties(YamlConfig::class)
 open class DataSourceConfiguration {
     companion object {
         private val logger = LogManager.getLogger(DataSourceConfiguration::class.java)
@@ -45,8 +49,6 @@ open class DataSourceConfiguration {
     @Value("\${spring.datasource.password}")
     private lateinit var password: String
 
-    @Value("\${spring.jpa.show-sql}")
-    private lateinit var showSql: String
 
     @Bean
     open fun entityManagerFactory(dataSource: DataSource): LocalContainerEntityManagerFactoryBean {
@@ -59,36 +61,11 @@ open class DataSourceConfiguration {
                     "ru.atomskills.tasks.domain",
                     "ru.atomskills.external.entity",
                     "ru.atomskills.tasks.comment.entity")
-            jpaPropertyMap = mapOf(
-                    "jakarta.persistence.validation.mode" to "none",
-                    "hibernate.hbm2ddl.auto" to "update",
-                    "hibernate.show_sql" to showSql,
-                    "hibernate.dialect" to "org.hibernate.dialect.PostgreSQLDialect",
-                    "hibernate.format_sql" to "true"
-            )
         }
     }
 
-//    @Bean
-//    fun entityManagerFactory(): LocalContainerEntityManagerFactoryBean {
-//        val em = LocalContainerEntityManagerFactoryBean()
-//        em.dataSource = dataSource()
-//        em.setPackagesToScan("com.baeldung.persistence.model")
-//
-//        val vendorAdapter: JpaVendorAdapter = HibernateJpaVendorAdapter()
-//        em.jpaVendorAdapter = vendorAdapter
-//        em.setJpaProperties(additionalProperties())
-//
-//        return em
-//    }
-//
     @Bean
     open fun transactionManager(entityManagerFactory: EntityManagerFactory) = JpaTransactionManager(entityManagerFactory)
-//
-//    @EventListener
-//    fun handleContextRefreshEvent(ctxStartEvt: ContextStartedEvent) {
-//        println("Context Start Event received.")
-//    }
 
     private fun getDatabaseName(url: String): String {
         return url.substringAfterLast("/")
@@ -102,8 +79,7 @@ open class DataSourceConfiguration {
             DriverManager.getConnection(baseUrl, username, password).use { connection ->
                 connection.prepareStatement(query).use { preparedStatement ->
                     preparedStatement.setString(1, dbName)
-                    val resultSet = preparedStatement.executeQuery()
-                    resultSet.next()
+                    preparedStatement.executeQuery().use { resultSet -> resultSet.next() }
                 }
             }
         } catch (e: SQLException) {
