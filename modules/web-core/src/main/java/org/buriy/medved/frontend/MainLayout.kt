@@ -13,22 +13,28 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.tabs.Tab
 import com.vaadin.flow.component.tabs.Tabs
 import com.vaadin.flow.component.tabs.TabsVariant
+import com.vaadin.flow.router.HasDynamicTitle
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.router.RouterLink
 import com.vaadin.flow.server.auth.AnonymousAllowed
+import org.buriy.medved.frontend.article.ArticlesView
 import org.buriy.medved.frontend.feed.FeedView
+import org.vaadin.lineawesome.LineAwesomeIcon
 import java.util.*
 
 
 @Route("")
-@PageTitle("News")
-@CssImport("./css/main-layout.css")//Stylesheet
+@CssImport("./styles/components/main-layout.css")//Stylesheet
+@CssImport(value = "./styles/components/app-layout.css", themeFor = "vaadin-app-layout")
+@CssImport(value = "./styles/components/tab.css", themeFor = "vaadin-tab")
 @AnonymousAllowed
-class MainLayout : AppLayout(){
+class MainLayout : AppLayout(), HasDynamicTitle {
     private val menu: Tabs
     private var viewTitle: H1? = null
-    private val FEED_LABEL = "Новости"
+    private val TITLE = "Новости бизнеса"
+    private val FEED_LABEL = "Лента"
+    private val ARTICLE_LABEL = "Статьи"
     //Панорама 2.0
     init{
         // Use the drawer for the menu
@@ -50,7 +56,9 @@ class MainLayout : AppLayout(){
         layout.themeList["dark"] = true
         layout.setWidthFull()
         layout.isSpacing = false
+        layout.isPadding = true
         layout.alignItems = FlexComponent.Alignment.CENTER
+        layout.justifyContentMode = FlexComponent.JustifyContentMode.BETWEEN;
 
         // Have the drawer toggle button on the left
         layout.add(DrawerToggle())
@@ -61,33 +69,35 @@ class MainLayout : AppLayout(){
         layout.add(viewTitle)
 
         // A user icon
-        layout.add(Image("img/user.svg", "Avatar"))
+//        layout.add(Image("img/user.svg", "Avatar"))
 
+        layout.add(LineAwesomeIcon.USER_SOLID.create())
         return layout
     }
 
     private fun createDrawerContent(menu: Tabs): Component {
-        val layout = VerticalLayout()
+        val drawerLayout = VerticalLayout()
 
         // Configure styling for the drawer
-        layout.setSizeFull()
-        layout.isPadding = false
-        layout.isSpacing = false
-        layout.themeList["spacing-s"] = true
-        layout.alignItems = FlexComponent.Alignment.STRETCH
+        drawerLayout.setSizeFull()
+        drawerLayout.isPadding = false
+        drawerLayout.isSpacing = false
+        drawerLayout.themeList["spacing-s"] = true
+        drawerLayout.alignItems = FlexComponent.Alignment.STRETCH
+
+        val mainLogo = Image("img/logo-business.png", "Logo")
+        mainLogo.setId("main-logo")
 
         // Have a drawer header with an application logo
         val logoLayout = HorizontalLayout()
         logoLayout.setId("logo")
         logoLayout.alignItems = FlexComponent.Alignment.CENTER
-        val mainLogo = Image("img/logo.png", "Logo")
-        mainLogo.setId("main-logo")
         logoLayout.add(mainLogo)
-        logoLayout.add(H1("My Project"))
+//        logoLayout.add(H1("My Project"))
 
         // Display the logo and the menu in the drawer
-        layout.add(logoLayout, menu)
-        return layout
+        drawerLayout.add(logoLayout, menu)
+        return drawerLayout
     }
 
     private fun createMenu(): Tabs {
@@ -101,7 +111,8 @@ class MainLayout : AppLayout(){
 
     private fun createMenuItems(): Array<Tab> {
         return arrayOf(
-            createTab(FEED_LABEL, FeedView::class.java)
+            createTab(FEED_LABEL, FeedView::class.java),
+            createTab(ARTICLE_LABEL, ArticlesView::class.java),
         )
     }
 
@@ -138,6 +149,10 @@ class MainLayout : AppLayout(){
     }
 
     private fun getCurrentPageTitle(): String {
-        return content.javaClass.getAnnotation(PageTitle::class.java).value
+        return (content as HasDynamicTitle).pageTitle
+    }
+
+    override fun getPageTitle(): String {
+        return TITLE
     }
 }

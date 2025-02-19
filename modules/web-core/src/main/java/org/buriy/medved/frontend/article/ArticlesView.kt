@@ -1,4 +1,4 @@
-package org.buriy.medved.frontend.feed
+package org.buriy.medved.frontend.article
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.router.HasDynamicTitle
@@ -6,10 +6,10 @@ import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
 import org.buriy.medved.frontend.MainLayout
 
-@Route(value = "feed", layout = MainLayout::class)
+@Route(value = "articles", layout = MainLayout::class)
 @AnonymousAllowed
-class FeedView: HorizontalLayout(), HasDynamicTitle {
-    private val TITLE = "News feed"
+class ArticlesView: HorizontalLayout(), HasDynamicTitle {
+    private val TITLE = "Articles"
 
     init{
 
