@@ -23,6 +23,7 @@ spring:
     username: postgres
     password: 12345678
     driver-class-name: org.postgresql.Driver
+
     hikari:
       pool-name: MainPool
       minimum-idle: 10
@@ -40,10 +41,14 @@ spring:
       jakarta:
         persistence:
           validation:
-            mode=none:
-      hibernate:
-        ddl-auto: update
-        format_sql: true
+            mode: none
+#      hibernate.hbm2ddl.auto: update
+        #        ddl-auto: update
+#        format_sql: true
+    hibernate:
+      ddl-auto: update
+#    hibernate.hbm2ddl.auto: update
+#    generate-ddl: false
   #spring.flyway.baseline-on-migrate=false
   servlet:
     multipart:

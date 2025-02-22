@@ -39,12 +39,12 @@ repositories {
     gradlePluginPortal()
 }
 
-configurations {
-	developmentOnly
-	runtimeClasspath {
-		extendsFrom developmentOnly
-	}
-}
+//configurations {
+//	developmentOnly
+//	runtimeClasspath {
+//		extendsFrom developmentOnly
+//	}
+//}
 
 String myBranch=project.hasProperty("branch-name")?project.property("branch-name") : null
 if (myBranch == null) {
@@ -57,11 +57,11 @@ task createRelease(description: 'Копирует в Release ', group: 'release'
     doLast {
         delete(myReleasePath)
 
-        copy {
-            from { project.configurations.getByName("developmentOnly").files }
-            include "*.zip"
-            into (myReleasePath)
-        }
+//        copy {
+//            from { project.configurations.getByName("developmentOnly").files }
+//            include "*.zip"
+//            into (myReleasePath)
+//        }
 
 
         copy {

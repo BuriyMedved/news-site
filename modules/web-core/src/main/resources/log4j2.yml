@@ -28,6 +28,12 @@ Configuration:
         AppenderRef:
           - ref: LogToConsole
           - ref: LogToRollingFile
+#      - name: org.hibernate
+#        level: debug
+#        additivity: false
+#        AppenderRef:
+#          - ref: LogToConsole
+#          - ref: LogToRollingFile
 
     Root:
       level: info

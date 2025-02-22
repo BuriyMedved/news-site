@@ -3,14 +3,12 @@ package org.buriy.medved
 import jakarta.annotation.PostConstruct
 import jakarta.persistence.EntityManagerFactory
 import org.apache.logging.log4j.LogManager
-import org.buriy.medved.config.YamlConfig
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 import org.springframework.orm.jpa.JpaTransactionManager
-import org.springframework.orm.jpa.JpaVendorAdapter
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 import org.springframework.transaction.annotation.EnableTransactionManagement
@@ -22,20 +20,15 @@ import javax.sql.DataSource
 /**
  * Spring конфигурация приложения
  */
-//@EnableVaadin
 @Configuration
-//@ComponentScan(
-//    "ru.atomskills.common",
-//)
-//@EnableJpaRepositories(
-//    "ru.atomskills.administration.server.repository",
-//)
+@ComponentScan(
+    "org.buriy.medved.repository",
+    "org.buriy.medved.service",
+)
 @EnableTransactionManagement
-
 @PropertySource("classpath:application.yml")
 //@PropertySource("classpath:application.properties")
-//@EnableConfigurationProperties(YamlConfig::class)
-open class DataSourceConfiguration {
+class DataSourceConfiguration {
     companion object {
         private val logger = LogManager.getLogger(DataSourceConfiguration::class.java)
     }
@@ -49,23 +42,27 @@ open class DataSourceConfiguration {
     @Value("\${spring.datasource.password}")
     private lateinit var password: String
 
+    @Value("\${spring.jpa.hibernate.ddl-auto}")
+    private lateinit var ddlAuto: String
 
-    @Bean
-    open fun entityManagerFactory(dataSource: DataSource): LocalContainerEntityManagerFactoryBean {
-        return LocalContainerEntityManagerFactoryBean().apply {
-            this.dataSource = dataSource
-            jpaVendorAdapter = HibernateJpaVendorAdapter()
-            setPackagesToScan("ru.atomskills.administration.server.domain",
-                    "ru.atomskills.report.server.domain",
-                    "ru.atomskills.passage_time_report.domain",
-                    "ru.atomskills.tasks.domain",
-                    "ru.atomskills.external.entity",
-                    "ru.atomskills.tasks.comment.entity")
-        }
-    }
 
-    @Bean
-    open fun transactionManager(entityManagerFactory: EntityManagerFactory) = JpaTransactionManager(entityManagerFactory)
+//    @Bean
+//    open fun entityManagerFactory(dataSource: DataSource): LocalContainerEntityManagerFactoryBean {
+//        return LocalContainerEntityManagerFactoryBean().apply {
+//            this.dataSource = dataSource
+//            jpaVendorAdapter = HibernateJpaVendorAdapter()
+//            setPackagesToScan(
+//                    "org.buriy.medved.entities"
+//            )
+////            jpaPropertyMap = mapOf(
+////                "hibernate.hbm2ddl.auto" to "update",
+////            )
+//            println("ddlAuto = " + ddlAuto)
+//        }
+//    }
+//
+//    @Bean
+//    open fun transactionManager(entityManagerFactory: EntityManagerFactory) = JpaTransactionManager(entityManagerFactory)
 
     private fun getDatabaseName(url: String): String {
         return url.substringAfterLast("/")
