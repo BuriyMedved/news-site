@@ -1,7 +1,7 @@
-package org.buriy.medved.mapper
+package org.buriy.medved.backend.mapper
 
-import org.buriy.medved.dto.ArticleDto
-import org.buriy.medved.entities.Article
+import org.buriy.medved.backend.dto.ArticleDto
+import org.buriy.medved.backend.entities.Article
 import org.mapstruct.Mapper
 import org.mapstruct.MappingConstants
 

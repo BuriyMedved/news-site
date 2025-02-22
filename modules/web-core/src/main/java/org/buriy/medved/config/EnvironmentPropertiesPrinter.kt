@@ -13,8 +13,6 @@ class EnvironmentPropertiesPrinter {
 
     @PostConstruct
     fun logApplicationProperties() {
-//        println("((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((")
-//        println(env)
-//        println("))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))")
+        println(env)
     }
 }
