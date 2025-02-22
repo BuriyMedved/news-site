@@ -13,7 +13,6 @@ import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
 import org.buriy.medved.frontend.MainLayout
 import org.buriy.medved.backend.service.ArticleService
-import java.util.*
 
 @Route(value = "articles", layout = MainLayout::class)
 @CssImport(value = "./styles/components/articles-layout.css")
@@ -30,7 +29,7 @@ class ArticlesView(
         rootLayout.setSizeFull()
         rootLayout.alignItems = FlexComponent.Alignment.START
         if(articleDtoList.isNotEmpty()){
-            var i = 0;
+            var i = 0
             var horizontalLayout: HorizontalLayout? = null
             articleDtoList.forEach { articleDto ->
                 val image = Image()

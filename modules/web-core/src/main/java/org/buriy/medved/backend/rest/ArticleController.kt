@@ -12,7 +12,6 @@ import java.util.UUID
 @RequestMapping("/articles")
 class ArticleController(
     private val articleService: ArticleService,
-    service: ArticleService
 ) {
     @GetMapping("/image")
     fun getImage(@RequestParam id: String): ResponseEntity<ByteArray> {

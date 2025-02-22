@@ -37,14 +37,14 @@ class MainLayout : AppLayout(), HasDynamicTitle {
     //Панорама 2.0
     init{
         // Use the drawer for the menu
-        setPrimarySection(Section.DRAWER);
+        setPrimarySection(Section.DRAWER)
 
         // Make the nav bar a header
-        addToNavbar(true, createHeaderContent());
+        addToNavbar(true, createHeaderContent())
 
         // Put the menu in the drawer
-        menu = createMenu();
-        addToDrawer(createDrawerContent(menu));
+        menu = createMenu()
+        addToDrawer(createDrawerContent(menu))
     }
 
     private fun createHeaderContent(): Component {
@@ -57,7 +57,7 @@ class MainLayout : AppLayout(), HasDynamicTitle {
         layout.isSpacing = false
         layout.isPadding = true
         layout.alignItems = FlexComponent.Alignment.CENTER
-        layout.justifyContentMode = FlexComponent.JustifyContentMode.BETWEEN;
+        layout.justifyContentMode = FlexComponent.JustifyContentMode.BETWEEN
 
         // Have the drawer toggle button on the left
         layout.add(DrawerToggle())
