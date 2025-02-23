@@ -2,22 +2,13 @@ buildscript {
     repositories {
         mavenCentral()
     }
-
-    dependencies {
-//        classpath "org.springframework.boot:spring-boot-gradle-plugin:3.1.5"
-//        classpath("com.vaadin:vaadin-gradle-plugin:24.4.12")
-//        classpath("io.spring.gradle:dependency-management-plugin:1.0.15.RELEASE")
-//        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22'
-//        classpath 'org.jetbrains.kotlin:kotlin-noarg:1.9.22'
-//        classpath 'org.jetbrains.kotlin:kotlin-allopen:1.9.22'
-    }
 }
 
 plugins {
     id "java"
-    id "org.springframework.boot" version "3.4.2"
+    id "org.springframework.boot" version "${springBootVersion}"
     id "com.vaadin"
-    id "io.spring.dependency-management" version "1.1.7"
+    id "io.spring.dependency-management" version "${springDmVersion}"
     id("org.jetbrains.kotlin.jvm") version "${kotlinVersion}"
 //    id 'kotlin'
     id("org.jetbrains.kotlin.plugin.jpa") version "${kotlinVersion}"
@@ -52,16 +43,8 @@ allOpen {
 }
 
 dependencies {
-//    compileOnly "org.projectlombok:lombok:1.18.34"
-//    annotationProcessor "org.projectlombok:lombok:1.18.34"
-//    developmentOnly "com.vaadin:vaadin-spring-boot-starter"
-//    kapt("groupId:artifactId:version")
-
-    kapt("org.mapstruct:mapstruct-processor:1.6.3")
-    implementation("org.mapstruct:mapstruct:1.6.3")
-
-//    implementation 'org.mapstruct:mapstruct:1.6.3'
-//    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    kapt("org.mapstruct:mapstruct-processor:${mapStructVersion}")
+    implementation("org.mapstruct:mapstruct:${mapStructVersion}")
 
     implementation "com.vaadin:vaadin-spring-boot-starter:${vaadinVersion}"
     implementation "com.vaadin:vaadin-core:${vaadinVersion}"
@@ -71,22 +54,22 @@ dependencies {
     implementation "com.vaadin:vaadin-rich-text-editor-flow:${vaadinVersion}"
 
     implementation "org.parttio:line-awesome:2.0.0"
-    implementation "org.postgresql:postgresql:42.7.4"
+    implementation "org.postgresql:postgresql:${pgDriverVersion}"
 
-    implementation "org.springframework.boot:spring-boot-starter-jdbc:3.4.3"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa:3.4.3"
-    implementation "org.springframework.security:spring-security-web:6.4.3"
-    implementation "org.springframework.security:spring-security-config:6.4.3"
+    implementation "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+    implementation "org.springframework.security:spring-security-web:${springSecurityVersion}"
+    implementation "org.springframework.security:spring-security-config:${springSecurityVersion}"
 
-    implementation "org.apache.logging.log4j:log4j-core:2.22.0"
-    implementation "org.apache.logging.log4j:log4j-api:2.22.0"
-    implementation "org.apache.logging.log4j:log4j-1.2-api:2.22.0"
+    implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-1.2-api:${log4jVersion}"
 
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml"
     implementation "com.itextpdf:itext-core:8.0.4"
-    implementation "org.apache.groovy:groovy:4.0.24"
+    implementation "org.apache.groovy:groovy:${groovyVersion}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
