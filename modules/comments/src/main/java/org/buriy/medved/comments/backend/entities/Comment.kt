@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Entity
-@Table(name = "z_article")
+@Table(name = "z_comment")
 data class Comment(
     @Column(name = "z_text", nullable = false, length = 2048)
     var text: String,

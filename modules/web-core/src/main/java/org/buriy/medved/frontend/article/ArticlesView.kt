@@ -1,18 +1,22 @@
 package org.buriy.medved.frontend.article
 
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.dependency.CssImport
-import com.vaadin.flow.component.html.Div
-import com.vaadin.flow.component.html.H1
-import com.vaadin.flow.component.html.H3
-import com.vaadin.flow.component.html.Image
+import com.vaadin.flow.component.html.*
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.page.Push
 import com.vaadin.flow.router.HasDynamicTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
-import org.buriy.medved.frontend.MainLayout
+import org.apache.logging.log4j.LogManager
+import org.buriy.medved.backend.dto.ArticleDto
 import org.buriy.medved.backend.service.ArticleService
+import org.buriy.medved.frontend.MainLayout
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.util.UriBuilder
+import java.net.URI
 
 @Route(value = "articles", layout = MainLayout::class)
 @CssImport(value = "./styles/components/articles-layout.css")
@@ -21,7 +25,9 @@ class ArticlesView(
     articleService: ArticleService
 ): HorizontalLayout(), HasDynamicTitle {
     private val TITLE = "Статьи"
-
+    companion object {
+        private val logger = LogManager.getLogger(ArticlesView::class.java)
+    }
     init{
         val articleDtoList = articleService.findAll()
 
@@ -29,9 +35,19 @@ class ArticlesView(
         rootLayout.setSizeFull()
         rootLayout.alignItems = FlexComponent.Alignment.START
         if(articleDtoList.isNotEmpty()){
+            val client = WebClient.create("http://localhost:8081")
+
             var i = 0
             var horizontalLayout: HorizontalLayout? = null
+            val currentUI = UI.getCurrent()
             articleDtoList.forEach { articleDto ->
+                val commentsCounter = Span("...")
+                try {
+                    loadCommentsCounter(articleDto, client, currentUI, commentsCounter)
+                } catch (e: Exception) {
+                    logger.debug("Сервис комментариев не доступен", e)
+                }
+
                 val image = Image()
                 image.src = "/articles/image?id=${articleDto.id}"
 
@@ -46,17 +62,16 @@ class ArticlesView(
                     articleLayout.setSizeFull()
                     image.setSizeFull()
 
-                    articleLayout.add(header, preview, image)
+                    articleLayout.add(header, preview, image, commentsCounter)
                     rootLayout.add(articleLayout)
                 }
                 else{
                     val header = H3(articleDto.title)
                     image.className = "gridImage"
-                    articleLayout.add(image, header)
-//                    articleLayout.width = "5%"
+                    articleLayout.add(image, header, commentsCounter)
+
                     if((i - 1) % 3 == 0){
                         horizontalLayout = HorizontalLayout()
-//                        horizontalLayout!!.setSizeFull()
                         rootLayout.add(horizontalLayout)
                     }
 
@@ -69,9 +84,34 @@ class ArticlesView(
             }
         }
 
-
-
         add(rootLayout)
+    }
+
+    private fun loadCommentsCounter(
+        articleDto: ArticleDto,
+        client: WebClient,
+        currentUI: UI,
+        commentsCounter: Span
+    ) {
+        val uriBuilderFunction: (t: UriBuilder) -> URI =
+            { builder ->
+                builder.path("/api/v1/commentsByArticleCount")
+                    .queryParam("articleId", articleDto.id.toString())
+                    .build()
+            }
+
+        client
+            .get()
+            .uri(uriBuilderFunction)
+            .retrieve()
+            .bodyToMono(Long::class.java)
+            .subscribe { commentsCount ->
+                try {
+                    currentUI.access { commentsCounter.text = "$commentsCount" }
+                } catch (e: Exception) {
+                    logger.debug("Пользовательский интерфейс не доступен ${e.message}")
+                }
+            }
     }
 
     override fun getPageTitle(): String {

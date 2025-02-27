@@ -24,7 +24,7 @@ spring:
       auto-commit: false
       transaction-isolation: 2 #TRANSACTION_READ_COMMITTED
   jpa:
-    show-sql: false
+    show-sql: true
     defer-datasource-initialization: true
     properties:
       jakarta:

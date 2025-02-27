@@ -8,4 +8,5 @@ import org.mapstruct.MappingConstants
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface CommentMapper {
     fun toDto(entity: Comment): CommentDto
+    fun toEntity(dto: CommentDto): Comment
 }
