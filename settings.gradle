@@ -28,4 +28,8 @@ include 'modules:comments'
 findProject(':modules:comments')?.name = 'comments'
 include 'modules:web-core'
 findProject(':modules:web-core')?.name = 'web-core'
+include 'modules:news-feed'
+findProject(':modules:news-feed')?.name = 'news-feed'
+include 'modules:news-feed'
+findProject(':modules:news-feed')?.name = 'news-feed'
 

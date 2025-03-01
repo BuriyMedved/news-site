@@ -1,14 +1,16 @@
 server:
-  port: ${PORT:8081}
+  port: ${PORT:8082}
 
 postgres:
   port: 5432
 
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
   profiles:
     active: noSecurity
   datasource:
-    url: jdbc:postgresql://localhost:${postgres.port}/comments
+    url: jdbc:postgresql://localhost:${postgres.port}/feed
     username: postgres
     password: 12345678
     driver-class-name: org.postgresql.Driver

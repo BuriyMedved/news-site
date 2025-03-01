@@ -13,6 +13,8 @@ postgres:
   port: 5432
 
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
   profiles:
     active: noSecurity
   datasource:
@@ -23,7 +25,7 @@ spring:
 
     hikari:
       pool-name: MainPool
-      minimum-idle: 10
+      minimum-idle: 3
       maximum-pool-size: 50
       idle-timeout: 30000
       max-lifetime: 180000

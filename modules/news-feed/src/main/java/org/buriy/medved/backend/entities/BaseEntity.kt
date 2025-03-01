@@ -10,6 +10,7 @@ class BaseEntity {
     @Column(name = "z_id", unique = true, nullable = false, length = 36)
     var id: UUID = UUID.randomUUID()
 
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is BaseEntity) return false
