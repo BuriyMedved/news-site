@@ -3,6 +3,7 @@ package org.buriy.medved.backend.entities
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "z_article")
@@ -13,6 +14,8 @@ data class Article (
     var preview: String,
     @Column(name = "z_text", nullable = false, columnDefinition = "TEXT")
     var text: String,
+    @Column(name = "z_publish_time", nullable = false)
+    var publishTime: LocalDateTime = LocalDateTime.now(),
     @Column(name = "z_image", nullable = true)
     var image: ByteArray
 ): BaseEntity() {

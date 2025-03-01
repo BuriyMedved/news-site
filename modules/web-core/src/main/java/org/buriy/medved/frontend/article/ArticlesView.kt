@@ -6,7 +6,6 @@ import com.vaadin.flow.component.html.*
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.component.page.Push
 import com.vaadin.flow.router.HasDynamicTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
@@ -16,7 +15,9 @@ import org.buriy.medved.backend.service.ArticleService
 import org.buriy.medved.frontend.MainLayout
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
+import org.vaadin.lineawesome.LineAwesomeIcon
 import java.net.URI
+import java.time.format.DateTimeFormatter
 
 @Route(value = "articles", layout = MainLayout::class)
 @CssImport(value = "./styles/components/articles-layout.css")
@@ -25,6 +26,7 @@ class ArticlesView(
     articleService: ArticleService
 ): HorizontalLayout(), HasDynamicTitle {
     private val TITLE = "Статьи"
+    private val dateFormat = DateTimeFormatter. ofPattern("yyyy-MM-dd HH:mm")
     companion object {
         private val logger = LogManager.getLogger(ArticlesView::class.java)
     }
@@ -41,12 +43,18 @@ class ArticlesView(
             var horizontalLayout: HorizontalLayout? = null
             val currentUI = UI.getCurrent()
             articleDtoList.forEach { articleDto ->
+                val footer = HorizontalLayout()
                 val commentsCounter = Span("...")
                 try {
                     loadCommentsCounter(articleDto, client, currentUI, commentsCounter)
                 } catch (e: Exception) {
                     logger.debug("Сервис комментариев не доступен", e)
                 }
+                val publishTime = Span(articleDto.publishTime.format(dateFormat))
+
+                footer.add(commentsCounter)
+                footer.add(LineAwesomeIcon.COMMENTS.create())
+                footer.add(publishTime)
 
                 val image = Image()
                 image.src = "/articles/image?id=${articleDto.id}"
@@ -62,13 +70,13 @@ class ArticlesView(
                     articleLayout.setSizeFull()
                     image.setSizeFull()
 
-                    articleLayout.add(header, preview, image, commentsCounter)
+                    articleLayout.add(header, preview, image, footer)
                     rootLayout.add(articleLayout)
                 }
                 else{
                     val header = H3(articleDto.title)
                     image.className = "gridImage"
-                    articleLayout.add(image, header, commentsCounter)
+                    articleLayout.add(image, header, footer)
 
                     if((i - 1) % 3 == 0){
                         horizontalLayout = HorizontalLayout()

@@ -110,17 +110,18 @@ class MainLayout : AppLayout(), HasDynamicTitle {
 
     private fun createMenuItems(): Array<Tab> {
         return arrayOf(
-            createTab(FEED_LABEL, FeedView::class.java),
-            createTab(ARTICLE_LABEL, ArticlesView::class.java),
+            createTab(LineAwesomeIcon.RSS_SOLID.create(), FEED_LABEL, FeedView::class.java),
+            createTab(LineAwesomeIcon.NEWSPAPER.create(), ARTICLE_LABEL, ArticlesView::class.java),
         )
     }
 
     private fun createTab(
+        icon: Component,
         text: String,
         navigationTarget: Class<out Component>
     ): Tab {
         val tab = Tab()
-        tab.add(RouterLink(text, navigationTarget))
+        tab.add(icon, RouterLink(text, navigationTarget))
         ComponentUtil.setData(tab, Class::class.java, navigationTarget)
         return tab
     }
