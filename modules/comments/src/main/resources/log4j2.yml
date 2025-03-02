@@ -6,7 +6,7 @@ Configuration:
     Console:
       name: LogToConsole
       PatternLayout:
-        Pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+        Pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%c] - %msg [%t]%n"
 
     RollingFile:
       - name: LogToRollingFile

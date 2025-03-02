@@ -1,6 +1,6 @@
 package org.buriy.medved
 
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -17,13 +17,13 @@ import java.sql.SQLException
 @ComponentScan(
     "org.buriy.medved.backend.repository",
     "org.buriy.medved.backend.service",
-//    "org.buriy.medved.backend.rest.v1",
+    "org.buriy.medved.backend.rest.v1",
 )
 @EnableTransactionManagement
 @PropertySource("classpath:application.yml")
 class DataSourceConfiguration {
     companion object {
-        private val logger = LogManager.getLogger(DataSourceConfiguration::class.java)
+        private val logger = LoggerFactory.getLogger(DataSourceConfiguration::class.java)
     }
     
     @Value("\${spring.datasource.url}")

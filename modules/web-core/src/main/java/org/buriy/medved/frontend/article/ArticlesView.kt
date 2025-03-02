@@ -9,10 +9,10 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.HasDynamicTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
-import org.apache.logging.log4j.LogManager
 import org.buriy.medved.backend.dto.ArticleDto
 import org.buriy.medved.backend.service.ArticleService
 import org.buriy.medved.frontend.MainLayout
+import org.slf4j.LoggerFactory
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import org.vaadin.lineawesome.LineAwesomeIcon
@@ -26,9 +26,9 @@ class ArticlesView(
     articleService: ArticleService
 ): HorizontalLayout(), HasDynamicTitle {
     private val TITLE = "Статьи"
-    private val dateFormat = DateTimeFormatter. ofPattern("yyyy-MM-dd HH:mm")
+    private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
     companion object {
-        private val logger = LogManager.getLogger(ArticlesView::class.java)
+        private val logger = LoggerFactory.getLogger(ArticlesView::class.java)
     }
     init{
         val articleDtoList = articleService.findAll()

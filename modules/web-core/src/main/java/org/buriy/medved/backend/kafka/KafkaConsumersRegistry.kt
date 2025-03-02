@@ -1,20 +1,39 @@
 package org.buriy.medved.backend.kafka
 
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
+import org.springframework.stereotype.Service
 
-enum class KafkaConsumersRegistry {
-    INSTANCE;
-
-    private val registry: ConcurrentMap<String, Long> = ConcurrentHashMap()
+@Service
+class KafkaConsumersRegistry(
+    private val kafkaListenerControlService: KafkaListenerControlService
+) {
+    private val registry: MutableMap<String, Long> = HashMap()
 
     fun register(topicId: String){
-        registry.merge(topicId, 1, Long::plus)
+        synchronized(registry) {
+            val count = registry[topicId]
+            if(count == null){
+                registry[topicId] = 1
+                kafkaListenerControlService.startListener(topicId)
+            }
+            else{
+                registry[topicId] = count.inc()
+            }
+        }
     }
 
     fun unregister(topicId: String){
-        registry.computeIfPresent(topicId) { key, value ->
-            if(value == 1L) null else value.dec()
+        synchronized(registry) {
+            val count = registry[topicId]
+            if(count == null){
+                return
+            }
+            else if (count == 1L){
+                registry.remove(topicId)
+                kafkaListenerControlService.stopListener(topicId)
+            }
+            else{
+                registry[topicId] = count.dec()
+            }
         }
     }
 }

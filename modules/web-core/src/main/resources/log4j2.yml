@@ -1,12 +1,12 @@
 
 Configuration:
-#  status: debug
+  status: debug
 
-  appenders:
+  Appenders:
     Console:
       name: LogToConsole
       PatternLayout:
-        Pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+        Pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%c] - %msg [%t]%n"
 
     RollingFile:
       - name: LogToRollingFile
@@ -21,9 +21,26 @@ Configuration:
 #          max: 10
 
   Loggers:
-    logger:
+    Root:
+      level: info
+      AppenderRef:
+        - ref: LogToConsole
+        - ref: LogToRollingFile
+    Logger:
       - name: org.buriy.medved
         level: info
+        additivity: false
+        AppenderRef:
+          - ref: LogToConsole
+          - ref: LogToRollingFile
+      - name: org.apache.kafka.clients
+        level: error
+        additivity: false
+        AppenderRef:
+          - ref: LogToConsole
+          - ref: LogToRollingFile
+      - name: org.springframework
+        level: warn
         additivity: false
         AppenderRef:
           - ref: LogToConsole
@@ -35,8 +52,3 @@ Configuration:
 #          - ref: LogToConsole
 #          - ref: LogToRollingFile
 
-    Root:
-      level: info
-      AppenderRef:
-        - ref: LogToConsole
-        - ref: LogToRollingFile

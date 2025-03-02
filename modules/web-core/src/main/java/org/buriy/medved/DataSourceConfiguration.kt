@@ -1,21 +1,14 @@
 package org.buriy.medved
 
 import jakarta.annotation.PostConstruct
-import jakarta.persistence.EntityManagerFactory
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
-import org.springframework.core.annotation.Order
-import org.springframework.orm.jpa.JpaTransactionManager
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import java.sql.DriverManager
 import java.sql.SQLException
-import javax.sql.DataSource
 
 
 /**
@@ -31,7 +24,7 @@ import javax.sql.DataSource
 //@PropertySource("classpath:application.properties")
 class DataSourceConfiguration {
     companion object {
-        private val logger = LogManager.getLogger(DataSourceConfiguration::class.java)
+        private val logger = LoggerFactory.getLogger(DataSourceConfiguration::class.java)
     }
 
     @Value("\${spring.datasource.url}")

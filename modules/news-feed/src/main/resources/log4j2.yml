@@ -6,12 +6,12 @@ Configuration:
     Console:
       name: LogToConsole
       PatternLayout:
-        Pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+        Pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%c] - %msg [%t]%n"
 
     RollingFile:
       - name: LogToRollingFile
-        fileName: "D:/temp/Logs/comments/Full"
-        filePattern: "D:/temp/Logs/comments/Full_%d{yyyy-MM-dd}.log"
+        fileName: "D:/temp/Logs/feed/Full"
+        filePattern: "D:/temp/Logs/feed/Full_%d{yyyy-MM-dd}.log"
         PatternLayout:
           pattern: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] %m%n"
         Policies:
