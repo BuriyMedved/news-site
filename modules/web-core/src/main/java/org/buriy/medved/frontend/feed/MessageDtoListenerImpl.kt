@@ -3,6 +3,7 @@ package org.buriy.medved.frontend.feed
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.messages.MessageList
 import com.vaadin.flow.component.messages.MessageListItem
+import org.buriy.medved.backend.common.imageBytesToBase64String
 import org.buriy.medved.backend.dto.MessageDto
 import org.buriy.medved.backend.dto.TagDto
 import org.buriy.medved.backend.kafka.MessageDtoListener
@@ -47,12 +48,11 @@ class MessageDtoListenerImpl(
                     )
                 }
                 else{
-                    val base64Image = Base64.getEncoder().encodeToString(image)
                     messageItem = MessageListItem(
                         message.text,
                         message.publishTime.toInstant(ZoneOffset.UTC),
                         message.tags,
-                        "data:image/png;base64, $base64Image"
+                        imageBytesToBase64String(image)
                     )
                 }
 

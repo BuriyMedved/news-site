@@ -2,13 +2,20 @@ package org.buriy.medved.frontend.feed
 
 import com.vaadin.flow.component.DetachEvent
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.component.combobox.MultiSelectComboBox
+import com.vaadin.flow.component.avatar.Avatar
+import com.vaadin.flow.component.html.H4
+import com.vaadin.flow.component.html.Span
+import com.vaadin.flow.component.listbox.MultiSelectListBox
 import com.vaadin.flow.component.messages.MessageList
+import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.router.HasDynamicTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
 import org.buriy.medved.backend.clients.TagsClientService
+import org.buriy.medved.backend.common.imageBytesToBase64String
 import org.buriy.medved.backend.dto.MessageDto
 import org.buriy.medved.backend.dto.TagDto
 import org.buriy.medved.backend.kafka.KafkaConsumersRegistry
@@ -28,6 +35,7 @@ class FeedView(
 ): HorizontalLayout(), HasDynamicTitle{
     private val title = "Лента новостей"
     private val tagsTitle = "Тэги новостей"
+    private val messagesTitleText = "Новости"
 
     companion object {
         private val logger = LoggerFactory.getLogger(FeedView::class.java)
@@ -43,14 +51,29 @@ class FeedView(
             logger.debug("Компонент ленты новостей создан для сессии с идентификатором $userID")
         }
         val list = MessageList()
-        val comboBox: MultiSelectComboBox<TagDto> = MultiSelectComboBox<TagDto>(
-            tagsTitle
-        )
+        val tagSelector: MultiSelectListBox<TagDto> = MultiSelectListBox<TagDto>()
+        tagSelector.setRenderer(ComponentRenderer { tagDto: TagDto ->
+            val row = HorizontalLayout()
+            row.alignItems = FlexComponent.Alignment.CENTER
 
-        //https://vaadin.com/docs/latest/components/combo-box#custom-item-presentation
-        comboBox.setItemLabelGenerator(TagDto::name)
-        comboBox.autoExpand = MultiSelectComboBox.AutoExpandMode.BOTH
-        comboBox.addValueChangeListener { event ->
+            val avatar = Avatar()
+            avatar.name = tagDto.name
+            avatar.image = imageBytesToBase64String(tagDto.image)
+
+            val name = Span(tagDto.name)
+
+            val column = VerticalLayout()
+            column.add(name)
+            column.isPadding = false
+            column.isSpacing = false
+
+            row.add(avatar, column)
+            row.style["line-height"] = "var(--lumo-line-height-m)"
+            row
+        })
+
+//        tagSelector.setItemLabelGenerator(TagDto::name)
+        tagSelector.addValueChangeListener { event ->
             val newValues = event.value
             val oldValues = event.oldValue
 
@@ -66,7 +89,6 @@ class FeedView(
                 }
             }
         }
-        add(comboBox)
 
         val function = { tagDto: TagDto ->
             concurrentHashMap[tagDto.id] = tagDto
@@ -82,21 +104,32 @@ class FeedView(
             try {
                 currentUI.access {
                     val values = concurrentHashMap.values
-                    comboBox.setItems(values)
-                    comboBox.select(values)
+                    tagSelector.setItems(values)
+                    tagSelector.select(values)
                 }
             } catch (e: Exception) {
                 logger.debug("Пользовательский интерфейс не доступен ${e.message}")
             }
         }
         tagsClientService.loadTags (function, onComplete)
-//        val message2 = MessageListItem(
-//            "All good. Ship it.",
-//            fiftyMinsAgo, "Linsey Listy", "${tagsClientService.imageURL}$"
-//        )
-//        message2.userColorIndex = 2
 
-        add(list)
+        val tagsSelectorTitle = H4(tagsTitle)
+        val messagesTitle = H4(messagesTitleText)
+
+        val selectorLayout = VerticalLayout()
+        selectorLayout.add(tagsSelectorTitle, tagSelector)
+        selectorLayout.setHeightFull()
+
+        val messagesLayout = VerticalLayout()
+        messagesLayout.add(messagesTitle, list)
+        messagesLayout.setSizeFull()
+
+        val rootLayout = HorizontalLayout()
+        
+        rootLayout.setSizeFull()
+        rootLayout.add(selectorLayout, messagesLayout)
+
+        add(rootLayout)
     }
 
     private fun registerListener(
@@ -117,12 +150,20 @@ class FeedView(
     }
 
     private fun removeListener(tagID: String, userID: String) {
-        val key = RegistryKey(tagID, userID)
+        val key = RegistryKey("${TopicList.TAGS_PREFIX.topic}$tagID", userID)
         val remove = listeners.remove(key)
         if(remove == null) {
             return
         }
         kafkaConsumersRegistry.unregister(key, remove)
+    }
+
+    private fun cleanListeners() {
+        for (entry in listeners) {
+            val key = entry.key
+            kafkaConsumersRegistry.unregister(key, entry.value)
+        }
+        listeners.clear()
     }
 
     override fun getPageTitle(): String {
@@ -133,10 +174,7 @@ class FeedView(
         if(logger.isDebugEnabled) {
             logger.debug("Компонент выгружен. Удаляю всех слушателей. Всего слушателей: ${listeners.size}")
         }
-        for (entry in listeners) {
-            val key = entry.key
-            removeListener(key.topicId, key.userId)
-        }
+        cleanListeners()
     }
 
 }
