@@ -17,4 +17,11 @@ data class Message(
     @Column(name = "z_tags", nullable = false, columnDefinition = "TEXT")
     var tags: String,
 ): BaseEntity() {
+    override fun equals(other: Any?): Boolean {
+        return super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        return super.hashCode()
+    }
 }

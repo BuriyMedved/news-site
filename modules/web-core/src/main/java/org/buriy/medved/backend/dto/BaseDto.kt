@@ -1,7 +1,9 @@
 package org.buriy.medved.backend.dto
 
+import org.buriy.medved.backend.common.NoArg
 import java.util.*
 
+@NoArg
 open class BaseDto (open val id: UUID){
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

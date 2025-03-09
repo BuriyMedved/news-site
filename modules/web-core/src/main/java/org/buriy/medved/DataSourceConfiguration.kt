@@ -18,6 +18,7 @@ import java.sql.SQLException
 @ComponentScan(
     "org.buriy.medved.backend.repository",
     "org.buriy.medved.backend.service",
+    "org.buriy.medved.backend.clients",
 )
 @EnableTransactionManagement
 @PropertySource("classpath:application.yml")

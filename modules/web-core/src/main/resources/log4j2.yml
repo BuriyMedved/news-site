@@ -45,6 +45,22 @@ Configuration:
         AppenderRef:
           - ref: LogToConsole
           - ref: LogToRollingFile
+
+      - name: org.buriy.medved.frontend.feed.FeedView
+        level: debug
+        additivity: false
+        AppenderRef:
+          - ref: LogToConsole
+      - name: org.buriy.medved.backend.kafka.KafkaConsumersRegistry
+        level: debug
+        additivity: false
+        AppenderRef:
+          - ref: LogToConsole
+      - name: org.buriy.medved.backend.kafka.KafkaTemplateListener
+        level: debug
+        additivity: false
+        AppenderRef:
+          - ref: LogToConsole
 #      - name: org.hibernate
 #        level: debug
 #        additivity: false

@@ -15,6 +15,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.spring") version "${kotlinVersion}"
     id("org.jetbrains.kotlin.plugin.allopen") version "${kotlinVersion}"
     id("org.jetbrains.kotlin.kapt")
+//    id "org.jetbrains.kotlin.plugin.noarg" version "${kotlinVersion}"
 }
 
 group = 'org.buriy.medved'
@@ -28,6 +29,10 @@ repositories {
 java {
     targetCompatibility = 20
     sourceCompatibility = 20
+}
+
+noArg {
+    annotation("org.buriy.medved.backend.common.NoArg")
 }
 
 vaadin{

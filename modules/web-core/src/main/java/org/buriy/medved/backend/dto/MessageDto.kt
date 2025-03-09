@@ -1,8 +1,10 @@
 package org.buriy.medved.backend.dto
 
+import org.buriy.medved.backend.common.NoArg
 import java.time.LocalDateTime
 import java.util.*
 
+@NoArg
 data class MessageDto(
     override val id: UUID,
     var text: String,

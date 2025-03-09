@@ -9,6 +9,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.HasDynamicTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
+import org.buriy.medved.backend.clients.CommentsClientService
 import org.buriy.medved.backend.dto.ArticleDto
 import org.buriy.medved.backend.service.ArticleService
 import org.buriy.medved.frontend.MainLayout
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import org.vaadin.lineawesome.LineAwesomeIcon
+import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.format.DateTimeFormatter
 
@@ -23,7 +25,8 @@ import java.time.format.DateTimeFormatter
 @CssImport(value = "./styles/components/articles-layout.css")
 @AnonymousAllowed
 class ArticlesView(
-    articleService: ArticleService
+    articleService: ArticleService,
+    commentsClientService: CommentsClientService,
 ): HorizontalLayout(), HasDynamicTitle {
     private val TITLE = "Статьи"
     private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
@@ -37,8 +40,6 @@ class ArticlesView(
         rootLayout.setSizeFull()
         rootLayout.alignItems = FlexComponent.Alignment.START
         if(articleDtoList.isNotEmpty()){
-            val client = WebClient.create("http://localhost:8081")
-
             var i = 0
             var horizontalLayout: HorizontalLayout? = null
             val currentUI = UI.getCurrent()
@@ -46,7 +47,14 @@ class ArticlesView(
                 val footer = HorizontalLayout()
                 val commentsCounter = Span("...")
                 try {
-                    loadCommentsCounter(articleDto, client, currentUI, commentsCounter)
+                    val function: (t: Long) -> Unit = { commentsCount ->
+                        try {
+                            currentUI.access { commentsCounter.text = "$commentsCount" }
+                        } catch (e: Exception) {
+                            logger.debug("Пользовательский интерфейс не доступен ${e.message}")
+                        }
+                    }
+                    commentsClientService.loadCommentsCounter(articleDto, function)
                 } catch (e: Exception) {
                     logger.debug("Сервис комментариев не доступен", e)
                 }
@@ -93,33 +101,6 @@ class ArticlesView(
         }
 
         add(rootLayout)
-    }
-
-    private fun loadCommentsCounter(
-        articleDto: ArticleDto,
-        client: WebClient,
-        currentUI: UI,
-        commentsCounter: Span
-    ) {
-        val uriBuilderFunction: (t: UriBuilder) -> URI =
-            { builder ->
-                builder.path("/api/v1/commentsByArticleCount")
-                    .queryParam("articleId", articleDto.id.toString())
-                    .build()
-            }
-
-        client
-            .get()
-            .uri(uriBuilderFunction)
-            .retrieve()
-            .bodyToMono(Long::class.java)
-            .subscribe { commentsCount ->
-                try {
-                    currentUI.access { commentsCounter.text = "$commentsCount" }
-                } catch (e: Exception) {
-                    logger.debug("Пользовательский интерфейс не доступен ${e.message}")
-                }
-            }
     }
 
     override fun getPageTitle(): String {
