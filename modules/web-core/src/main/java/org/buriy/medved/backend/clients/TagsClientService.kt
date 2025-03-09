@@ -16,7 +16,7 @@ class TagsClientService {
 
     private val baseURL = "http://localhost:8082"
     private val client = WebClient.create(baseURL)
-    val imageURL = "$baseURL/api/v1/tagImage?tagId="
+//    val imageURL = "$baseURL/api/v1/tagImage?tagId="
 
     fun loadTags(
         function: (t: TagDto) -> Unit,

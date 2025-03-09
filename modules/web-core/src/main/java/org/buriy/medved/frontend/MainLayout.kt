@@ -31,13 +31,13 @@ import java.util.*
 class MainLayout : AppLayout(), HasDynamicTitle {
     private val menu: Tabs
     private var viewTitle: H1? = null
-    private val TITLE = "Новости бизнеса"
-    private val FEED_LABEL = "Лента"
-    private val ARTICLE_LABEL = "Статьи"
+    private val title = "Новости бизнеса"
+    private val feedLabel = "Лента"
+    private val articleLabel = "Статьи"
     //Панорама 2.0
     init{
         // Use the drawer for the menu
-        setPrimarySection(Section.DRAWER)
+        primarySection = Section.DRAWER
 
         // Make the nav bar a header
         addToNavbar(true, createHeaderContent())
@@ -110,8 +110,8 @@ class MainLayout : AppLayout(), HasDynamicTitle {
 
     private fun createMenuItems(): Array<Tab> {
         return arrayOf(
-            createTab(LineAwesomeIcon.RSS_SOLID.create(), FEED_LABEL, FeedView::class.java),
-            createTab(LineAwesomeIcon.NEWSPAPER.create(), ARTICLE_LABEL, ArticlesView::class.java),
+            createTab(LineAwesomeIcon.RSS_SOLID.create(), feedLabel, FeedView::class.java),
+            createTab(LineAwesomeIcon.NEWSPAPER.create(), articleLabel, ArticlesView::class.java),
         )
     }
 
@@ -153,6 +153,6 @@ class MainLayout : AppLayout(), HasDynamicTitle {
     }
 
     override fun getPageTitle(): String {
-        return TITLE
+        return title
     }
 }

@@ -26,8 +26,8 @@ class FeedView(
     tagsClientService: TagsClientService,
     private val kafkaConsumersRegistry: KafkaConsumersRegistry<MessageDto>
 ): HorizontalLayout(), HasDynamicTitle{
-    private val TITLE = "Лента новостей"
-    private val TAGS_TITLE = "Тэги новостей"
+    private val title = "Лента новостей"
+    private val tagsTitle = "Тэги новостей"
 
     companion object {
         private val logger = LoggerFactory.getLogger(FeedView::class.java)
@@ -44,7 +44,7 @@ class FeedView(
         }
         val list = MessageList()
         val comboBox: MultiSelectComboBox<TagDto> = MultiSelectComboBox<TagDto>(
-            TAGS_TITLE
+            tagsTitle
         )
 
         //https://vaadin.com/docs/latest/components/combo-box#custom-item-presentation
@@ -126,7 +126,7 @@ class FeedView(
     }
 
     override fun getPageTitle(): String {
-        return TITLE
+        return title
     }
 
     override fun onDetach(detachEvent: DetachEvent) {

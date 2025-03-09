@@ -5,7 +5,7 @@ import org.buriy.medved.backend.dto.BaseDto
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.listener.MessageListener
 
-class KafkaTemplateListener<T: BaseDto>(val registry: KafkaConsumersRegistry<T>): MessageListener<String, T> {
+class KafkaTemplateListener<T: BaseDto>(private val registry: KafkaConsumersRegistry<T>): MessageListener<String, T> {
     companion object {
         private val logger = LoggerFactory.getLogger(KafkaTemplateListener::class.java)
     }

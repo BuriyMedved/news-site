@@ -8,7 +8,6 @@ import org.buriy.medved.backend.dto.TagDto
 import org.buriy.medved.backend.kafka.MessageDtoListener
 import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -19,9 +18,8 @@ class MessageDtoListenerImpl(
     private val tagDtos: Set<TagDto>
 ): MessageDtoListener<MessageDto> {
     companion object{
-        val logger = LoggerFactory.getLogger(MessageDtoListenerImpl::class.java)
+        private val logger = LoggerFactory.getLogger(MessageDtoListenerImpl::class.java)
     }
-    private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
     override fun onMessage(message: MessageDto) {
         if(logger.isDebugEnabled){

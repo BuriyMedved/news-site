@@ -1,6 +1,5 @@
 package org.buriy.medved.backend.repository
 
-import org.buriy.medved.backend.entities.Message
 import org.buriy.medved.backend.entities.Tag
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor

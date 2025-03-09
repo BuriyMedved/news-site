@@ -8,7 +8,7 @@ import org.buriy.medved.comments.backend.dto.CommentSearchDto
 import org.buriy.medved.comments.backend.entities.Comment
 import org.springframework.data.jpa.domain.Specification
 
-class CommentSpecification(val searchDto: CommentSearchDto): Specification<Comment> {
+class CommentSpecification(private val searchDto: CommentSearchDto): Specification<Comment> {
     override fun toPredicate(
         root: Root<Comment>,
         query: CriteriaQuery<*>?,

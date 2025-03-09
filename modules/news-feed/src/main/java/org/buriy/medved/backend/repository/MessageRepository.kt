@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface MessageRepository: JpaRepository<Message, UUID>, JpaSpecificationExecutor<Message> {
-}
+interface MessageRepository: JpaRepository<Message, UUID>, JpaSpecificationExecutor<Message>

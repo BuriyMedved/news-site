@@ -3,7 +3,7 @@ package org.buriy.medved.backend.server
 import com.vaadin.flow.server.ServiceInitEvent
 import com.vaadin.flow.server.SessionDestroyEvent
 import org.buriy.medved.backend.dto.MessageDto
-import org.slf4j.LoggerFactory;
+import org.slf4j.LoggerFactory
 import org.buriy.medved.backend.kafka.KafkaConsumersRegistry
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component

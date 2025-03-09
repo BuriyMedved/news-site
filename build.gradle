@@ -2,15 +2,6 @@ buildscript {
     repositories {
         mavenCentral()
     }
-
-//    dependencies {
-//        classpath "org.springframework.boot:spring-boot-gradle-plugin:3.1.5"
-//        classpath("com.vaadin:vaadin-gradle-plugin:24.4.12")
-//        classpath("io.spring.gradle:dependency-management-plugin:1.0.15.RELEASE")
-//        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22'
-//        classpath 'org.jetbrains.kotlin:kotlin-noarg:1.9.22'
-//        classpath 'org.jetbrains.kotlin:kotlin-allopen:1.9.22'
-//    }
 }
 
 plugins {
@@ -39,52 +30,5 @@ repositories {
     gradlePluginPortal()
 }
 
-//configurations {
-//	developmentOnly
-//	runtimeClasspath {
-//		extendsFrom developmentOnly
-//	}
-//}
 
-String myBranch=project.hasProperty("branch-name")?project.property("branch-name") : null
-if (myBranch == null) {
-    myBranch = "local"
-}
-String myReleasePath = '../../Release_'+myBranch+'/' + project.name
-
-task createRelease(description: 'Копирует в Release ', group: 'release') {
-    dependsOn bootJar
-    doLast {
-        delete(myReleasePath)
-
-//        copy {
-//            from { project.configurations.getByName("developmentOnly").files }
-//            include "*.zip"
-//            into (myReleasePath)
-//        }
-
-
-        copy {
-            from { "profiles/platform-all-platforms" }
-            into (myReleasePath)
-        }
-
-        def installPath = myReleasePath + "/install"
-
-        copy {
-            from {
-                zipTree("$installPath/soft/openjdk-20.0.2_windows-x64_bin.zip")
-            }
-
-            into installPath + "/soft"
-        }
-
-        delete "$installPath/soft/openjdk-20.0.2_windows-x64_bin.zip"
-
-        copy {
-            from bootJar.archivePath
-            into installPath
-        }
-    }
-}
 

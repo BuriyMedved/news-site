@@ -37,27 +37,6 @@ class DataSourceConfiguration {
     @Value("\${spring.datasource.password}")
     private lateinit var password: String
 
-    @Value("\${spring.jpa.hibernate.ddl-auto}")
-    private lateinit var ddlAuto: String
-
-
-//    @Bean
-//    open fun entityManagerFactory(dataSource: DataSource): LocalContainerEntityManagerFactoryBean {
-//        return LocalContainerEntityManagerFactoryBean().apply {
-//            this.dataSource = dataSource
-//            jpaVendorAdapter = HibernateJpaVendorAdapter()
-//            setPackagesToScan(
-//                    "org.buriy.medved.entities"
-//            )
-////            jpaPropertyMap = mapOf(
-////                "hibernate.hbm2ddl.auto" to "update",
-////            )
-//            println("ddlAuto = " + ddlAuto)
-//        }
-//    }
-//
-//    @Bean
-//    open fun transactionManager(entityManagerFactory: EntityManagerFactory) = JpaTransactionManager(entityManagerFactory)
 
     private fun getDatabaseName(url: String): String {
         return url.substringAfterLast("/")

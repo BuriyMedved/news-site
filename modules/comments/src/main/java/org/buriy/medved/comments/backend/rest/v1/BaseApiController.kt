@@ -1,9 +1,6 @@
 package org.buriy.medved.comments.backend.rest.v1
 
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 
-//@RestController
 @RequestMapping("/api/v1")
-open class BaseApiController {
-}
+open class BaseApiController
