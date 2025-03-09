@@ -27,8 +27,7 @@ class KafkaConsumerConfig {
         configProps[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapAddress
         configProps[ConsumerConfig.GROUP_ID_CONFIG] = "foo"
         configProps[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
-//        configProps[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = JsonDeserializer::class.java
-
+//        configProps[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
         //если MessageDto у отправителя и получателя находятся в разных пакетах
         //или того хуже у отправителя вооюще отсутствует заголовок с типом объекта
         //то spring слушатель уходит в бесконечный цикл попыток распарсить сообщение

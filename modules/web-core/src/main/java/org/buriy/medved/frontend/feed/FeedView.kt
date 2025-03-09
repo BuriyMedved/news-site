@@ -39,7 +39,9 @@ class FeedView(
     init{
         val currentUI = UI.getCurrent()
         val userID = currentUI.session.session.id as String
-
+        if(logger.isDebugEnabled){
+            logger.debug("Компонент ленты новостей создан для сессии с идентификатором $userID")
+        }
         val list = MessageList()
         val comboBox: MultiSelectComboBox<TagDto> = MultiSelectComboBox<TagDto>(
             TAGS_TITLE
@@ -73,7 +75,7 @@ class FeedView(
         val onComplete = Runnable {
             if(logger.isDebugEnabled) {
                 if(concurrentHashMap.isNotEmpty()) {
-                    logger.debug("Получен список тегов:")
+                    logger.debug("Получен список тегов")
                     concurrentHashMap.forEach { entry -> logger.debug("${entry.value}") }
                 }
             }
@@ -115,7 +117,7 @@ class FeedView(
     }
 
     private fun removeListener(tagID: String, userID: String) {
-        val key = RegistryKey("${TopicList.TAGS_PREFIX.topic}$tagID", userID)
+        val key = RegistryKey(tagID, userID)
         val remove = listeners.remove(key)
         if(remove == null) {
             return
@@ -129,12 +131,12 @@ class FeedView(
 
     override fun onDetach(detachEvent: DetachEvent) {
         if(logger.isDebugEnabled) {
-            logger.debug("Компонент выгружен. Удаляю всех слушателей")
+            logger.debug("Компонент выгружен. Удаляю всех слушателей. Всего слушателей: ${listeners.size}")
         }
         for (entry in listeners) {
             val key = entry.key
             removeListener(key.topicId, key.userId)
         }
-
     }
+
 }
