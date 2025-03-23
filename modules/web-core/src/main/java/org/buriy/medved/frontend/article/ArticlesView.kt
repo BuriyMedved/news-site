@@ -60,7 +60,7 @@ class ArticlesView(
                 footer.add(publishTime)
 
                 val image = Image()
-                image.src = "/articles/image?id=${articleDto.id}"
+                image.src = "/api/v1/articles/image?id=${articleDto.id}"
 
                 val articleLayout = VerticalLayout()
                 articleLayout.alignItems = FlexComponent.Alignment.START

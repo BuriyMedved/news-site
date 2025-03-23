@@ -1,0 +1,36 @@
+
+Configuration:
+#  status: debug
+
+  appenders:
+    Console:
+      name: LogToConsole
+      PatternLayout:
+        Pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%c] - %msg [%t]%n"
+
+    RollingFile:
+      - name: LogToRollingFile
+        fileName: "D:/temp/Logs/api-gateway/Full"
+        filePattern: "D:/temp/Logs/api-gateway/Full_%d{yyyy-MM-dd}.log"
+        PatternLayout:
+          pattern: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] %m%n"
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: 1
+#        DefaultRollOverStrategy:
+#          max: 10
+
+  Loggers:
+    logger:
+      - name: org.buriy.medved
+        level: info
+        additivity: false
+        AppenderRef:
+          - ref: LogToConsole
+          - ref: LogToRollingFile
+
+    Root:
+      level: info
+      AppenderRef:
+        - ref: LogToConsole
+        - ref: LogToRollingFile

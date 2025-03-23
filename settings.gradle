@@ -32,4 +32,8 @@ include 'modules:news-feed'
 findProject(':modules:news-feed')?.name = 'news-feed'
 include 'modules:news-feed'
 findProject(':modules:news-feed')?.name = 'news-feed'
+include 'modules:auth-server'
+findProject(':modules:auth-server')?.name = 'auth-server'
+include 'modules:api-gateway'
+findProject(':modules:api-gateway')?.name = 'api-gateway'
 

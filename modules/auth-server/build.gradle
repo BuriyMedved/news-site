@@ -1,21 +1,12 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-}
-
 plugins {
     id "java"
     id "org.springframework.boot" version "${springBootVersion}"
-    id "com.vaadin"
     id "io.spring.dependency-management" version "${springDmVersion}"
     id("org.jetbrains.kotlin.jvm") version "${kotlinVersion}"
-//    id 'kotlin'
     id("org.jetbrains.kotlin.plugin.jpa") version "${kotlinVersion}"
     id("org.jetbrains.kotlin.plugin.spring") version "${kotlinVersion}"
     id("org.jetbrains.kotlin.plugin.allopen") version "${kotlinVersion}"
     id "org.jetbrains.kotlin.kapt" version "${kotlinVersion}"
-//    id "org.jetbrains.kotlin.plugin.noarg" version "${kotlinVersion}"
 }
 
 group = 'org.buriy.medved'
@@ -31,15 +22,6 @@ java {
     sourceCompatibility = 20
 }
 
-noArg {
-    annotation("org.buriy.medved.backend.common.NoArg")
-}
-
-vaadin{
-    optimizeBundle = true
-    productionMode = true
-}
-
 allOpen {
     annotation("jakarta.persistence.Entity")
     annotation("jakarta.persistence.MappedSuperclass")
@@ -51,34 +33,20 @@ dependencies {
     kapt("org.mapstruct:mapstruct-processor:${mapStructVersion}")
     implementation("org.mapstruct:mapstruct:${mapStructVersion}")
 
-    implementation "com.vaadin:vaadin-spring-boot-starter:${vaadinVersion}"
-    implementation "com.vaadin:vaadin-core:${vaadinVersion}"
-    implementation "com.vaadin:vaadin-board-flow:${vaadinVersion}"
-    implementation "com.vaadin:vaadin-charts-flow:${vaadinVersion}"
-    implementation "com.vaadin:vaadin-map-flow:${vaadinVersion}"
-    implementation "com.vaadin:vaadin-rich-text-editor-flow:${vaadinVersion}"
-
-    implementation "org.parttio:line-awesome:2.0.0"
     implementation "org.postgresql:postgresql:${pgDriverVersion}"
 
-    implementation "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
+//    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+//    implementation "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}"
+//    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-log4j2:${springBootVersion}"
-
-    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-security:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server:${springBootVersion}"
-//    implementation "org.springframework.boot:spring-boot-starter-oauth2-client:${springBootVersion}"
-//    implementation "org.springframework.security:spring-security-web:${springSecurityVersion}"
-//    implementation "org.springframework.security:spring-security-config:${springSecurityVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-authorization-server:${springBootVersion}"
 
-    implementation "org.springframework.kafka:spring-kafka:${springKafkaVersion}"
 
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml"
-    implementation "com.itextpdf:itext-core:8.0.4"
     implementation "org.apache.groovy:groovy:${groovyVersion}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
@@ -92,18 +60,9 @@ configurations.configureEach {
     exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
 }
 
-dependencyManagement {
-    imports {
-        mavenBom "com.vaadin:vaadin-bom:$vaadinVersion"
-    }
-}
 kotlin {
     jvmToolchain(20)
 }
-
-//tasks.test{
-//    useJUnitPlatform()
-//}
 
 test {
     useJUnitPlatform()

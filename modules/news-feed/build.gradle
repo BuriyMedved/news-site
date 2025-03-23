@@ -6,7 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.jpa") version "${kotlinVersion}"
     id("org.jetbrains.kotlin.plugin.spring") version "${kotlinVersion}"
     id("org.jetbrains.kotlin.plugin.allopen") version "${kotlinVersion}"
-    id("org.jetbrains.kotlin.kapt")
+    id "org.jetbrains.kotlin.kapt" version "${kotlinVersion}"
 }
 
 group = 'org.buriy.medved'
@@ -49,7 +49,7 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml"
     implementation "org.apache.groovy:groovy:${groovyVersion}"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {

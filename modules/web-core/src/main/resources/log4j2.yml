@@ -1,6 +1,6 @@
 
 Configuration:
-  status: debug
+#  status: debug
 
   Appenders:
     Console:
@@ -58,6 +58,16 @@ Configuration:
           - ref: LogToConsole
       - name: org.buriy.medved.backend.kafka.KafkaTemplateListener
         level: debug
+        additivity: false
+        AppenderRef:
+          - ref: LogToConsole
+      - name: org.springframework.security
+        level: debug
+        additivity: false
+        AppenderRef:
+          - ref: LogToConsole
+      - name: org.atmosphere.cpr.AtmosphereFramework
+        level: warn
         additivity: false
         AppenderRef:
           - ref: LogToConsole
