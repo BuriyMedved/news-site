@@ -1,7 +1,12 @@
 server:
   port: 8080
 
+
 spring:
+#  main:
+#    web-application-type: reactive
+  websecurity:
+    debug: true
   security:
     oauth2:
       client:

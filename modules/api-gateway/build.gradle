@@ -26,14 +26,14 @@ dependencies {
     kapt("org.mapstruct:mapstruct-processor:${mapStructVersion}")
     implementation("org.mapstruct:mapstruct:${mapStructVersion}")
 
+//    implementation "org.springframework.cloud:spring-cloud-starter-gateway:${springCloudGateway}"
+
     implementation "org.springframework.boot:spring-boot-starter-log4j2:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter-security:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-oauth2-authorization-server:${springBootVersion}"
 
     implementation "io.projectreactor.netty:reactor-netty:${reactorNettyVersion}"
 

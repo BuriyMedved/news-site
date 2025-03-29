@@ -1,70 +1,77 @@
 package org.buriy.medved
 
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.Customizer
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer
-import org.springframework.security.core.AuthenticationException
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
-import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
-import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction
-import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
+import org.springframework.security.config.web.server.ServerHttpSecurity
+import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager
+import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientProviderBuilder
+import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository
+import org.springframework.security.oauth2.client.web.DefaultReactiveOAuth2AuthorizedClientManager
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction
+import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository
+import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.web.reactive.function.client.WebClient
 
 
 @Configuration
-@EnableWebSecurity
+@EnableWebFluxSecurity
 class OAuth2ClientSecurityConfig {
+    @Value("\${spring.websecurity.debug:false}")
+    var webSecurityDebug: Boolean = false
+
     @Bean
     @Throws(Exception::class)
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+    fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http
-            .authorizeHttpRequests { authorizeRequests ->
-                authorizeRequests.requestMatchers(
-                    "/login**","/callback/", "/webjars/**", "/error**", "/oauth2/**", "/favicon.ico"
-                ).anonymous()
-                .anyRequest().authenticated()
+            //это если нужно защитить внутренние ресурсы, указанные здесь ресурсы не попадают в oauth2 авторизацию
+//            .securityMatcher(PathPatternParserServerWebExchangeMatcher("/api/**"))
+            .authorizeExchange { authorizeRequests ->
+
+                authorizeRequests.pathMatchers(
+                    "/login**","/callback/", "/webjars/**", "/error**", "/oauth2/**", "/favicon.ico", "/test/**"
+                ).permitAll()
+                //все остальное только для аутентифицированных
+                .anyExchange().authenticated()
+
             }
-            .oauth2Login { oauth2Login: OAuth2LoginConfigurer<HttpSecurity?> ->
-                oauth2Login.loginPage("/oauth2/authorization/articles-client-oidc")
-                oauth2Login.failureHandler{
-                        request: HttpServletRequest, response: HttpServletResponse, exception: AuthenticationException ->
-                    println("!!!! exception " + exception.message)
-                }
-            }
+
+//            .oauth2Login { oauth2Login ->
+//                oauth2Login.loginPage("/oauth2/authorization/articles-client-oidc")
+//            }
+            .oauth2Login(Customizer.withDefaults())
             .oauth2Client(Customizer.withDefaults())
+
         return http.build()
     }
 
     @Bean
-    fun webClient(authorizedClientManager: OAuth2AuthorizedClientManager?): WebClient {
-        val oauth2Client =
-            ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
-        return WebClient.builder()
-                        .apply(oauth2Client.oauth2Configuration())
-                        .build()
+    fun webClient(
+        authorizedClientManager: ReactiveOAuth2AuthorizedClientManager,
+    ): WebClient {
+        val filter =
+            ServerOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
+
+        val builder = WebClient.builder()
+        builder.filter(filter)
+        return builder.build()
     }
 
     @Bean
     fun authorizedClientManager(
-        clientRegistrationRepository: ClientRegistrationRepository?,
-        authorizedClientRepository: OAuth2AuthorizedClientRepository?
-    ): OAuth2AuthorizedClientManager {
+        clientRegistrationRepository: ReactiveClientRegistrationRepository?,
+        authorizedClientRepository: ServerOAuth2AuthorizedClientRepository?
+    ): ReactiveOAuth2AuthorizedClientManager {
         val authorizedClientProvider =
-            OAuth2AuthorizedClientProviderBuilder.builder()
+            ReactiveOAuth2AuthorizedClientProviderBuilder.builder()
                 .authorizationCode()
                 .refreshToken()
                 .build()
-        val authorizedClientManager = DefaultOAuth2AuthorizedClientManager(
+        val authorizedClientManager = DefaultReactiveOAuth2AuthorizedClientManager(
             clientRegistrationRepository, authorizedClientRepository
         )
         authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
@@ -74,12 +81,18 @@ class OAuth2ClientSecurityConfig {
 
     @Bean
     fun webSecurityCustomizer(): WebSecurityCustomizer {
-        return WebSecurityCustomizer { web: WebSecurity -> web.debug(true) }
+        return WebSecurityCustomizer { web: WebSecurity -> web.debug(webSecurityDebug) }
     }
 
 //    @Bean
-//    fun webClient(): WebClient {
-//        return WebClient.builder()
+//    fun myRoutes(builder: RouteLocatorBuilder): RouteLocator {
+//        return builder.routes()
+//            .route { p: PredicateSpec ->
+//                p
+//                    .path("/get")
+//                    .filters { f: GatewayFilterSpec -> f.addRequestHeader("Hello", "World") }
+//                    .uri("http://httpbin.org:80")
+//            }
 //            .build()
 //    }
 }
