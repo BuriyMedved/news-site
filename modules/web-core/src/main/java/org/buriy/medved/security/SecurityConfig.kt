@@ -1,5 +1,6 @@
 package org.buriy.medved.security
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -16,7 +17,8 @@ import org.springframework.security.web.SecurityFilterChain
 @EnableWebSecurity
 @Profile("prod")
 class SecurityConfig {
-
+    @Value("\${spring.websecurity.debug:false}")
+    var webSecurityDebug: Boolean = false
 
     @Bean
     @Throws(Exception::class)
@@ -36,6 +38,6 @@ class SecurityConfig {
 
     @Bean
     fun webSecurityCustomizer(): WebSecurityCustomizer {
-        return WebSecurityCustomizer { web: WebSecurity -> web.debug(true) }
+        return WebSecurityCustomizer { web: WebSecurity -> web.debug(webSecurityDebug) }
     }
 }

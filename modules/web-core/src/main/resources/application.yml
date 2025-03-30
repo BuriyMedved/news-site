@@ -12,6 +12,8 @@ vaadin:
 postgres:
   port: 5432
 spring:
+  websecurity:
+    debug: true
   security:
     oauth2:
       resourceserver:

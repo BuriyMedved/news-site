@@ -1,5 +1,6 @@
 package org.buriy.medved
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -22,6 +23,8 @@ import java.util.*
 @Configuration
 @EnableWebSecurity
 class SecurityConfig {
+    @Value("\${spring.websecurity.debug:false}")
+    var webSecurityDebug: Boolean = false
 //    @Bean
 //    @Order(1)
 //    @Throws(Exception::class)
@@ -185,6 +188,6 @@ class SecurityConfig {
 
     @Bean
     fun webSecurityCustomizer(): WebSecurityCustomizer {
-        return WebSecurityCustomizer { web: WebSecurity -> web.debug(true) }
+        return WebSecurityCustomizer { web: WebSecurity -> web.debug(webSecurityDebug) }
     }
 }

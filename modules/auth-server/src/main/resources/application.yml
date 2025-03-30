@@ -3,6 +3,8 @@ server:
   address: 127.0.0.2
 
 spring:
+  websecurity:
+    debug: true
   security:
     oauth2:
       authorizationserver:
