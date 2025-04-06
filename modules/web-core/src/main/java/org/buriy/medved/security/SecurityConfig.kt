@@ -23,8 +23,8 @@ class SecurityConfig {
     @Bean
     @Throws(Exception::class)
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.securityMatcher("/api/v1/articles/**")
-//        http.securityMatcher("/articles/**")
+//        http.securityMatcher("/api/v1/articles/**")
+        http.securityMatcher("/articles/**")
             .authorizeHttpRequests { authorize ->
                 authorize.anyRequest().hasAuthority("SCOPE_articles.read")
             }

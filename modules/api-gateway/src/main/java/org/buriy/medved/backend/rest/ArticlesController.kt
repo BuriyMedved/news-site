@@ -1,6 +1,7 @@
 package org.buriy.medved.backend.rest
 
 import org.slf4j.LoggerFactory
+import org.springframework.http.MediaType
 import org.springframework.scheduling.annotation.Async
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient
@@ -17,45 +18,40 @@ class ArticlesController(private val webClient: WebClient) {
         val logger = LoggerFactory.getLogger(ArticlesController::class.java)
     }
 
-    @Async
-    @GetMapping(value = ["/api/articles"])
-    fun getArticlesApi(
-        @RegisteredOAuth2AuthorizedClient("articles-client-authorization-code") authorizedClient: OAuth2AuthorizedClient?
-    ): Mono<Array<String>> {
-        try {
-            val bodyToMono = webClient
-                .get()
-                .uri("http://localhost:9080/api/v1/articles/list")
-                .attributes(oauth2AuthorizedClient(authorizedClient))
-                .retrieve()
-                .bodyToMono(Array<String>::class.java)
-            return bodyToMono
-        } catch (e: Exception) {
-            logger.error("", e)
-            return Mono.just(emptyArray())
-        }
-    }
-
-//    @GetMapping(value = ["/articles"], produces = [MediaType.TEXT_HTML_VALUE])
-//    fun getArticles(
-////        @RegisteredOAuth2AuthorizedClient("articles-client-authorization-code") authorizedClient: OAuth2AuthorizedClient?
-//    ): String {
+//    @Async
+//    @GetMapping(value = ["/api/articles"])
+//    fun getArticlesApi(
+//        @RegisteredOAuth2AuthorizedClient("articles-client-authorization-code") authorizedClient: OAuth2AuthorizedClient?
+//    ): Mono<Array<String>> {
 //        try {
-//            val result:String?
-//            result = webClient
+//            val bodyToMono = webClient
 //                .get()
-//                .uri("http://localhost:9080/index.html")
-////                .accept(MediaType.TEXT_HTML)
-////                .attributes(oauth2AuthorizedClient(authorizedClient))
+//                .uri("http://localhost:9080/api/v1/articles/list")
+//                .attributes(oauth2AuthorizedClient(authorizedClient))
 //                .retrieve()
-//                .bodyToMono(String::class.java)
-//                .block()
-//            println("articles = $result")
-//
-//            return result
+//                .bodyToMono(Array<String>::class.java)
+//            return bodyToMono
 //        } catch (e: Exception) {
 //            logger.error("", e)
-//            return ""
+//            return Mono.just(emptyArray())
 //        }
 //    }
+
+    @Async
+    @GetMapping(value = ["/articles"])
+    fun getArticles(
+        @RegisteredOAuth2AuthorizedClient("articles-client-authorization-code") authorizedClient: OAuth2AuthorizedClient?
+    ): Mono<String> {
+        try {
+            return webClient
+                .get()
+                .uri("http://localhost:9080/articles")
+                .attributes(oauth2AuthorizedClient(authorizedClient))
+                .retrieve()
+                .bodyToMono(String::class.java)
+        } catch (e: Exception) {
+            logger.error("", e)
+            return Mono.just("")
+        }
+    }
 }

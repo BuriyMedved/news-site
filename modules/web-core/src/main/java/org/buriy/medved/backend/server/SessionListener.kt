@@ -22,12 +22,15 @@ class SessionListener(
         event.source.addSessionDestroyListener { sessionDestroyEvent: SessionDestroyEvent ->
             val session = sessionDestroyEvent.session
             logger.info("Session destroyed!")
-            val topics = session.getAttribute(SessionAttributes.FEED_TOPICS.value) as Set<*>
-
-            for (topic in topics) {
-                val topicID = topic as String
-//                kafkaConsumersRegistry.unregister(topicID)
-            }
+//            val attribute = session.getAttribute(SessionAttributes.FEED_TOPICS.value)
+//            if(attribute != null) {
+//                val topics = attribute as Set<*>
+//
+//                for (topic in topics) {
+//                    val topicID = topic as String
+//    //                kafkaConsumersRegistry.unregister(topicID)
+//                }
+//            }
         }
     }
 }

@@ -5,8 +5,11 @@ server:
 spring:
 #  main:
 #    web-application-type: reactive
-  websecurity:
-    debug: true
+  profiles:
+#    active: noSecurity
+    active: prod
+#  websecurity:
+#    debug: true
   security:
     oauth2:
       client:

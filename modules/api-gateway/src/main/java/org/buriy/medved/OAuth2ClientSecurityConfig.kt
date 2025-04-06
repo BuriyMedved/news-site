@@ -1,8 +1,14 @@
 package org.buriy.medved
 
+import org.buriy.medved.backend.routes.LoggingGlobalPreFilter
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cloud.gateway.filter.GlobalFilter
+import org.springframework.cloud.gateway.route.RouteLocator
+import org.springframework.cloud.gateway.route.builder.PredicateSpec
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
@@ -20,6 +26,7 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 @EnableWebFluxSecurity
+@Profile("prod")
 class OAuth2ClientSecurityConfig {
     @Value("\${spring.websecurity.debug:false}")
     var webSecurityDebug: Boolean = false
@@ -33,17 +40,18 @@ class OAuth2ClientSecurityConfig {
             .authorizeExchange { authorizeRequests ->
 
                 authorizeRequests.pathMatchers(
-                    "/login**","/callback/", "/webjars/**", "/error**", "/oauth2/**", "/favicon.ico", "/test/**"
+                    "/login**","/callback/", "/error**", "/oauth2/**", "/favicon.ico"
                 ).permitAll()
                 //все остальное только для аутентифицированных
                 .anyExchange().authenticated()
 
             }
-
-//            .oauth2Login { oauth2Login ->
-//                oauth2Login.loginPage("/oauth2/authorization/articles-client-oidc")
-//            }
-            .oauth2Login(Customizer.withDefaults())
+            .csrf {
+                it.disable()
+            }
+            .oauth2Login { oauth2Login ->
+                oauth2Login.loginPage("/oauth2/authorization/articles-client-oidc")
+            }
             .oauth2Client(Customizer.withDefaults())
 
         return http.build()
@@ -84,15 +92,19 @@ class OAuth2ClientSecurityConfig {
         return WebSecurityCustomizer { web: WebSecurity -> web.debug(webSecurityDebug) }
     }
 
-//    @Bean
-//    fun myRoutes(builder: RouteLocatorBuilder): RouteLocator {
-//        return builder.routes()
-//            .route { p: PredicateSpec ->
-//                p
-//                    .path("/get")
-//                    .filters { f: GatewayFilterSpec -> f.addRequestHeader("Hello", "World") }
-//                    .uri("http://httpbin.org:80")
-//            }
-//            .build()
-//    }
+    @Bean
+    fun myRoutes(builder: RouteLocatorBuilder): RouteLocator {
+        val routeBuilder = builder.routes()
+            .route("articles-service") { predicateSpec: PredicateSpec ->
+                predicateSpec
+                    .path("/**")
+                    .uri("http://localhost:9080/**")
+            }
+        return routeBuilder.build()
+    }
+
+    @Bean
+    fun customFilter(): GlobalFilter {
+        return LoggingGlobalPreFilter()
+    }
 }
