@@ -8,6 +8,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.HasDynamicTitle
 import com.vaadin.flow.router.Route
+import com.vaadin.flow.router.RouteParameters
 import com.vaadin.flow.server.auth.AnonymousAllowed
 import org.buriy.medved.backend.clients.CommentsClientService
 import org.buriy.medved.backend.service.ArticleService
@@ -18,6 +19,7 @@ import java.time.format.DateTimeFormatter
 
 @Route(value = "articles", layout = MainLayout::class)
 @CssImport(value = "./styles/components/articles-layout.css")
+@CssImport(value = "./styles/components/common.css")
 @AnonymousAllowed
 class ArticlesView(
     articleService: ArticleService,
@@ -64,6 +66,13 @@ class ArticlesView(
 
                 val articleLayout = VerticalLayout()
                 articleLayout.alignItems = FlexComponent.Alignment.START
+                articleLayout.addClickListener { e ->
+                    articleLayout.ui.ifPresent { ui ->
+                        ui.navigate(SingleArticleView::class.java, RouteParameters("id", articleDto.id.toString()))
+                    }
+                }
+                articleLayout.addClassName("pointerCursor")
+
                 if(i == 0){
                     val header = H1(articleDto.title)
                     val preview = Div()

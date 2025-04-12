@@ -1,14 +1,18 @@
 package org.buriy.medved.backend.entities
 
 import jakarta.persistence.*
+import org.springframework.data.domain.Persistable
 import java.util.UUID
 
 @MappedSuperclass
-class BaseEntity {
+class BaseEntity : Persistable<UUID> {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "z_id", unique = true, nullable = false, length = 36)
-    var id: UUID = UUID.randomUUID()
+    private var id: UUID = UUID.randomUUID()
+
+    @Version
+    @Column(name = "z_version", nullable = false)
+    var version: Long = -1
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -21,5 +25,17 @@ class BaseEntity {
 
     override fun hashCode(): Int {
         return id.hashCode()
+    }
+
+    override fun getId(): UUID? {
+        return id
+    }
+
+    fun setId(id: UUID) {
+        this.id = id
+    }
+
+    override fun isNew(): Boolean {
+        return version < 0
     }
 }

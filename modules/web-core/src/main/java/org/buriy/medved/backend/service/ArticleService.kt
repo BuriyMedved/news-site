@@ -17,4 +17,12 @@ class ArticleService (val articleMapper: ArticleMapper,
     fun findArticleImageById(articleId: UUID): ByteArray? {
         return articleRepository.findArticleImageById(articleId)
     }
+
+    fun findById(id: UUID): ArticleDto? {
+        val entity = articleRepository.findById(id)
+        if (!entity.isPresent) {
+            return null
+        }
+        return  articleMapper.toDto(entity.get())
+    }
 }

@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.reactive.function.client.WebClient
 
 
 @Configuration
@@ -39,5 +40,11 @@ class SecurityConfig {
     @Bean
     fun webSecurityCustomizer(): WebSecurityCustomizer {
         return WebSecurityCustomizer { web: WebSecurity -> web.debug(webSecurityDebug) }
+    }
+
+    @Bean
+    fun commentsWebClient(): WebClient {
+        val builder = WebClient.builder()
+        return builder.build()
     }
 }

@@ -1,5 +1,6 @@
 package org.buriy.medved.comments.backend.service
 
+import jakarta.transaction.Transactional
 import org.buriy.medved.comments.backend.dto.CommentDto
 import org.buriy.medved.comments.backend.dto.CommentSearchDto
 import org.buriy.medved.comments.backend.mapper.CommentMapper
@@ -13,6 +14,7 @@ class CommentService(
     val commentRepository: CommentRepository,
     val commentMapper: CommentMapper,
 ) {
+//    @Transactional
     fun save(commentDto: CommentDto) {
         commentRepository.save(commentMapper.toEntity(commentDto))
     }

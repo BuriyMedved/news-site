@@ -22,8 +22,8 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
   profiles:
-#    active: noSecurity
-    active: prod
+    active: noSecurity
+#    active: prod
   datasource:
     url: jdbc:postgresql://localhost:${postgres.port}/news-site
     username: postgres
