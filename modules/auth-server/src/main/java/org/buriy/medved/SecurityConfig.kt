@@ -181,7 +181,8 @@ class SecurityConfig {
             .username("admin")
             .password("password")
             .passwordEncoder { rawPassword: CharSequence? -> encoder.encode(rawPassword) }
-            .roles("USER")
+//            .roles("USER")
+            .roles("articles.read")
             .build()
         return InMemoryUserDetailsManager(user)
     }

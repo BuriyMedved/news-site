@@ -13,8 +13,8 @@ class KafkaListenerCreator<T : BaseDto> (
     fun createContainer( topic: String, group: String, kafkaTemplateListener: KafkaTemplateListener<T>): ConcurrentMessageListenerContainer<String, T> {
         val container = kafkaListenerContainerFactory.createContainer(topic)
         container.containerProperties.messageListener = kafkaTemplateListener
-        container.containerProperties.groupId = group
-        container.beanName = group
+        container.containerProperties.setGroupId(group)
+        container.setBeanName(group)
         container.start()
         return container
     }

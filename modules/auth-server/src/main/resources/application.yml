@@ -26,3 +26,5 @@ spring:
               scopes:
                 - openid
                 - articles.read
+                - profile
+                - email

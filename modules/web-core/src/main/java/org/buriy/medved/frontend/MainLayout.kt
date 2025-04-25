@@ -7,6 +7,7 @@ import com.vaadin.flow.component.applayout.DrawerToggle
 import com.vaadin.flow.component.dependency.CssImport
 import com.vaadin.flow.component.html.H1
 import com.vaadin.flow.component.html.Image
+import com.vaadin.flow.component.html.Span
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -17,23 +18,27 @@ import com.vaadin.flow.router.HasDynamicTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.router.RouterLink
 import com.vaadin.flow.server.auth.AnonymousAllowed
+import com.vaadin.flow.spring.security.AuthenticationContext
 import org.buriy.medved.frontend.article.ArticlesView
 import org.buriy.medved.frontend.feed.FeedView
 import org.vaadin.lineawesome.LineAwesomeIcon
 import java.util.*
 
 
-@Route("")
+@Route("main")
 @CssImport("./styles/components/main-layout.css")//Stylesheet
 @CssImport(value = "./styles/components/app-layout.css", themeFor = "vaadin-app-layout")
 @CssImport(value = "./styles/components/tab.css", themeFor = "vaadin-tab")
 @AnonymousAllowed
-class MainLayout : AppLayout(), HasDynamicTitle {
+class MainLayout(
+    private val authenticationContext : AuthenticationContext
+) : AppLayout(), HasDynamicTitle {
     private val menu: Tabs
     private var viewTitle: H1? = null
     private val title = "Новости бизнеса"
     private val feedLabel = "Лента"
     private val articleLabel = "Статьи"
+    private val anonymous = "Аноним"
     //Панорама 2.0
     init{
         // Use the drawer for the menu
@@ -69,8 +74,18 @@ class MainLayout : AppLayout(), HasDynamicTitle {
 
         // A user icon
 //        layout.add(Image("img/user.svg", "Avatar"))
+        val authenticated = authenticationContext.isAuthenticated
+        val userName = if(authenticated && authenticationContext.principalName.isPresent){
+            authenticationContext.principalName.get()
+        }
+        else{
+            anonymous
+        }
 
-        layout.add(LineAwesomeIcon.USER_SOLID.create())
+        val userInfo = Span()
+        userInfo.add(LineAwesomeIcon.USER_SOLID.create())
+        userInfo.add(userName)
+        layout.add(userInfo)
         return layout
     }
 

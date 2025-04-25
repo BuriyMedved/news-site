@@ -6,10 +6,9 @@ import com.vaadin.flow.component.html.*
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.router.HasDynamicTitle
-import com.vaadin.flow.router.Route
-import com.vaadin.flow.router.RouteParameters
-import com.vaadin.flow.server.auth.AnonymousAllowed
+import com.vaadin.flow.router.*
+import com.vaadin.flow.spring.security.AuthenticationContext
+import jakarta.annotation.security.RolesAllowed
 import org.buriy.medved.backend.clients.CommentsClientService
 import org.buriy.medved.backend.service.ArticleService
 import org.buriy.medved.frontend.MainLayout
@@ -20,10 +19,11 @@ import java.time.format.DateTimeFormatter
 @Route(value = "articles", layout = MainLayout::class)
 @CssImport(value = "./styles/components/articles-layout.css")
 @CssImport(value = "./styles/components/common.css")
-@AnonymousAllowed
+@RolesAllowed("articles.read")
 class ArticlesView(
     articleService: ArticleService,
     commentsClientService: CommentsClientService,
+    authenticationContext : AuthenticationContext
 ): HorizontalLayout(), HasDynamicTitle {
     private val title = "Статьи"
     private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")

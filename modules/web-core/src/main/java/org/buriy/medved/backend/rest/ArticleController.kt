@@ -2,6 +2,7 @@ package org.buriy.medved.backend.rest
 
 import org.buriy.medved.backend.service.ArticleService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -18,6 +19,7 @@ class ArticleController(
     }
     @GetMapping("/list")
     fun getList(): Array<String> {
+        println("!!!IN CONTROLLER ${SecurityContextHolder.getContext().getAuthentication()}")
         return arrayOf("name_one", "name_two", "name_three")
     }
 }

@@ -38,7 +38,7 @@ class KafkaConsumerConfig {
 
         val jsonDeserializer = JsonDeserializer(MessageDto::class.java)
         val errorHandlingDeserializer = ErrorHandlingDeserializer(jsonDeserializer)
-        defaultKafkaConsumerFactory.valueDeserializer = errorHandlingDeserializer
+        defaultKafkaConsumerFactory.setValueDeserializer(errorHandlingDeserializer)
         
         return defaultKafkaConsumerFactory
     }

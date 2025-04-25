@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono
 
 class LoggingGlobalPreFilter: GlobalFilter, Ordered {
     override fun filter(exchange: ServerWebExchange, chain: GatewayFilterChain): Mono<Void> {
-        println("LoggingGlobalPreFilter filter")
+//        println("LoggingGlobalPreFilter filter")
 //        println(exchange.request.headers)
         return chain.filter(exchange)
     }

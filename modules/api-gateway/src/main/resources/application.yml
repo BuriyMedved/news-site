@@ -3,6 +3,18 @@ server:
 
 
 spring:
+  cloud:
+    gateway:
+      routes:
+        - id: bff
+          uri: http://localhost:9080
+          predicates:
+            - Path=/**
+          filters:
+            - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+            - TokenRelay=
+            - SaveSession
+#            - StripPrefix=1
 #  main:
 #    web-application-type: reactive
   profiles:
@@ -20,15 +32,15 @@ spring:
             client-secret: secret
             authorization-grant-type: authorization_code
             redirect-uri: "http://localhost:8080/login/oauth2/code/{registrationId}"
-            scope: openid
-            client-name: articles-client-oidc
+            scope: articles.read, openid
+            client-name:  articles-client-oidc
           articles-client-authorization-code:
             provider: spring
             client-id: articles-client
             client-secret: secret
             authorization-grant-type: authorization_code
             redirect-uri: "http://localhost:8080/authorized"
-            scope: articles.read
+            scope: articles.read, openid
             client-name: articles-client-authorization-code
         provider:
           spring:

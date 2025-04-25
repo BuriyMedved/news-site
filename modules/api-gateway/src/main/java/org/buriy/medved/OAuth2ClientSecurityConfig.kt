@@ -3,9 +3,6 @@ package org.buriy.medved
 import org.buriy.medved.backend.routes.LoggingGlobalPreFilter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cloud.gateway.filter.GlobalFilter
-import org.springframework.cloud.gateway.route.RouteLocator
-import org.springframework.cloud.gateway.route.builder.PredicateSpec
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -35,12 +32,10 @@ class OAuth2ClientSecurityConfig {
     @Throws(Exception::class)
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http
-            //это если нужно защитить внутренние ресурсы, указанные здесь ресурсы не попадают в oauth2 авторизацию
-//            .securityMatcher(PathPatternParserServerWebExchangeMatcher("/api/**"))
             .authorizeExchange { authorizeRequests ->
 
                 authorizeRequests.pathMatchers(
-                    "/login**","/callback/", "/error**", "/oauth2/**", "/favicon.ico"
+                    "/login**","/callback/", "/error**", "/oauth2/**", "/favicon.ico", "/userinfo"
                 ).permitAll()
                 //все остальное только для аутентифицированных
                 .anyExchange().authenticated()
@@ -90,17 +85,6 @@ class OAuth2ClientSecurityConfig {
     @Bean
     fun webSecurityCustomizer(): WebSecurityCustomizer {
         return WebSecurityCustomizer { web: WebSecurity -> web.debug(webSecurityDebug) }
-    }
-
-    @Bean
-    fun myRoutes(builder: RouteLocatorBuilder): RouteLocator {
-        val routeBuilder = builder.routes()
-            .route("articles-service") { predicateSpec: PredicateSpec ->
-                predicateSpec
-                    .path("/**")
-                    .uri("http://localhost:9080/**")
-            }
-        return routeBuilder.build()
     }
 
     @Bean
