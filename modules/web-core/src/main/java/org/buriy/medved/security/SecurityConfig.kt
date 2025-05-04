@@ -14,6 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer
 import org.springframework.security.config.core.GrantedAuthorityDefaults
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.security.web.access.intercept.AuthorizationFilter
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
 import org.springframework.security.web.session.DisableEncodeUrlFilter
@@ -106,15 +108,15 @@ class SecurityConfig : VaadinWebSecurity() {
 //        setLoginView(http, LoginView::class.java)
     }
 
-//    override fun enableNavigationAccessControl(): Boolean {
-//        return false
-//    }
+    @Bean
+    fun jwtAuthenticationConverter(): JwtAuthenticationConverter {
+        val grantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter()
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("user-roles")
 
-//    @Bean
-//    override fun webSecurityCustomizer(): WebSecurityCustomizer {
-////        super.webSecurityCustomizer()
-//        return WebSecurityCustomizer { web: WebSecurity -> web.debug(webSecurityDebug) }
-//    }
+        val jwtAuthenticationConverter = JwtAuthenticationConverter()
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter)
+        return jwtAuthenticationConverter
+    }
 
     override fun configure(web: WebSecurity) {
         web.debug(webSecurityDebug)

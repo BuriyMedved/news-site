@@ -10,7 +10,9 @@ import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientProviderBuilder
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository
@@ -19,6 +21,9 @@ import org.springframework.security.oauth2.client.web.reactive.function.client.S
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.server.ServerWebExchange
+import org.springframework.web.server.WebFilterChain
+import reactor.core.publisher.Mono
 
 
 @Configuration
@@ -39,8 +44,8 @@ class OAuth2ClientSecurityConfig {
                 ).permitAll()
                 //все остальное только для аутентифицированных
                 .anyExchange().authenticated()
-
             }
+//            .addFilterAfter(this::filter, SecurityWebFiltersOrder.AUTHORIZATION)
             .csrf {
                 it.disable()
             }
@@ -50,6 +55,13 @@ class OAuth2ClientSecurityConfig {
             .oauth2Client(Customizer.withDefaults())
 
         return http.build()
+    }
+
+    fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
+        val context = ReactiveSecurityContextHolder.getContext()
+        val securityContext = context.toFuture().get()
+
+        return chain.filter(exchange)
     }
 
     @Bean

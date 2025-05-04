@@ -20,8 +20,8 @@ spring:
   profiles:
 #    active: noSecurity
     active: prod
-#  websecurity:
-#    debug: true
+  websecurity:
+    debug: true
   security:
     oauth2:
       client:

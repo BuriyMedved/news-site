@@ -1,20 +1,26 @@
 package org.buriy.medved
 
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
+import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import java.util.*
@@ -23,6 +29,9 @@ import java.util.*
 @Configuration
 @EnableWebSecurity
 class SecurityConfig {
+    companion object{
+        val logger = LoggerFactory.getLogger(SecurityConfig::class.java)
+    }
     @Value("\${spring.websecurity.debug:false}")
     var webSecurityDebug: Boolean = false
 //    @Bean
@@ -145,15 +154,75 @@ class SecurityConfig {
     @Throws(Exception::class)
     fun authorizationServerSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http)
-//        http.with(OAuth2AuthorizationServerConfigurer.authorizationServer(), Customizer.withDefaults())
         http.getConfigurer(OAuth2AuthorizationServerConfigurer::class.java)
             .oidc(Customizer.withDefaults()) // Enable OpenID Connect 1.0
-//        http.exceptionHandling {
-//                exceptions -> exceptions.accessDeniedHandler { request, response, accessDeniedException ->
-//                     println("request = [${request}], response = [${response}], accessDeniedException = [${accessDeniedException}]")
-//                }
-//        }
         return http.formLogin(Customizer.withDefaults()).build()
+    }
+
+//    @Bean
+//    @Order(1)
+//    @Throws(Exception::class)
+//    fun authorizationServerSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
+//        val authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer()
+//
+//        http
+//            .securityMatcher(authorizationServerConfigurer.endpointsMatcher)
+//            .with(
+//                authorizationServerConfigurer
+//            ) { authorizationServer: OAuth2AuthorizationServerConfigurer ->
+//                authorizationServer.oidc(Customizer.withDefaults())
+//            } // Enable OpenID Connect 1.0
+//
+//            .authorizeHttpRequests{ authorize ->
+//                authorize.anyRequest().authenticated()
+//            }
+//             // Redirect to the OAuth 2.0 Login endpoint when not authenticated
+//            // from the authorization endpoint
+//            .exceptionHandling { exceptions: ExceptionHandlingConfigurer<HttpSecurity?> ->
+//                exceptions
+//                    .defaultAuthenticationEntryPointFor(
+//                        LoginUrlAuthenticationEntryPoint("/oauth2/authorization/my-client"),
+//                        MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+//                    )
+//            }
+//
+//        return http.build()
+//    }
+
+    @Bean
+    fun jwtTokenCustomizer(): OAuth2TokenCustomizer<JwtEncodingContext> {
+        return OAuth2TokenCustomizer { context: JwtEncodingContext ->
+            if (OAuth2TokenType.ACCESS_TOKEN == context.tokenType) {
+                val userRoles: Set<String> = AuthorityUtils.authorityListToSet(context.getPrincipal<UsernamePasswordAuthenticationToken>().authorities)
+
+                val userRolesNoPrefix: MutableSet<String> = HashSet()
+                userRoles.forEach {
+                    val noPrefix = it.replace("ROLE_", "")
+                    userRolesNoPrefix.add(noPrefix)
+                }
+                val finalSet: MutableSet<String> = HashSet()
+
+                context.authorizedScopes.forEach {
+                    if(userRolesNoPrefix.contains(it) || it.equals("openid")) {
+                        finalSet.add(it)
+                    }
+                }
+                var userRolesCommaSeparated = ""
+                finalSet.forEach {
+                    userRolesCommaSeparated = "$it $userRolesCommaSeparated"
+                }
+                if (userRolesCommaSeparated.isNotEmpty()) {
+                    userRolesCommaSeparated = userRolesCommaSeparated.substring(0, userRolesCommaSeparated.length - 1)
+                }
+
+                if(logger.isDebugEnabled){
+                    logger.debug("Пользователь: ${context.getPrincipal<UsernamePasswordAuthenticationToken>()} Роли: $userRolesCommaSeparated")
+                }
+                context.claims.claims { claims: MutableMap<String?, Any?> ->
+                    claims["user-roles"] = userRolesCommaSeparated
+                }
+            }
+        }
     }
 
     @Bean
@@ -167,9 +236,6 @@ class SecurityConfig {
                 .anyRequest().authenticated()
         }
 
-//        http.authorizeHttpRequests {
-//            authorizeRequests -> authorizeRequests.anyRequest().authenticated()
-//        }
         .formLogin(Customizer.withDefaults())
         return http.build()
     }
@@ -178,13 +244,21 @@ class SecurityConfig {
     fun users(): UserDetailsService {
         val encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
         val user: UserDetails = User.builder()
-            .username("admin")
-            .password("password")
+            .username("user")
+            .password("12345678")
+            .passwordEncoder { rawPassword: CharSequence? -> encoder.encode(rawPassword) }
+//            .roles("USER")
+//            .roles("articles.read")
+            .build()
+
+        val premium: UserDetails = User.builder()
+            .username("prem")
+            .password("12345678")
             .passwordEncoder { rawPassword: CharSequence? -> encoder.encode(rawPassword) }
 //            .roles("USER")
             .roles("articles.read")
             .build()
-        return InMemoryUserDetailsManager(user)
+        return InMemoryUserDetailsManager(user, premium)
     }
 
     @Bean
