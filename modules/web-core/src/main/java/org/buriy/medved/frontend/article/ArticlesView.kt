@@ -23,7 +23,6 @@ import java.time.format.DateTimeFormatter
 class ArticlesView(
     articleService: ArticleService,
     commentsClientService: CommentsClientService,
-    authenticationContext : AuthenticationContext
 ): HorizontalLayout(), HasDynamicTitle {
     private val title = "Статьи"
     private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")

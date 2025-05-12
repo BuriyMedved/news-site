@@ -1,16 +1,17 @@
 package org.buriy.medved.backend.dto
 
 import org.buriy.medved.backend.annotation.NoArg
-import java.time.LocalDateTime
 import java.util.*
 
 @NoArg
-data class MessageDto(
-    override val id: UUID,
-    var text: String,
-    var publishTime: LocalDateTime,
-    var tags: String
-) :BaseDto(id){
+data class UserDto(
+    override var id: UUID,
+    var login: String,
+    var password: String,
+    var name: String,
+    var email: String,
+    var roles: MutableSet<String>,
+) : BaseDto(id){
     override fun equals(other: Any?): Boolean {
         return super.equals(other)
     }

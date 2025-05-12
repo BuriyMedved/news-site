@@ -57,16 +57,16 @@ class SecurityConfig : VaadinWebSecurity() {
 
         http
             .addFilterBefore({ servletRequest, servletResponse, filterChain ->
-                val httpServletRequest = servletRequest as HttpServletRequest
-                val session = httpServletRequest.getSession(false)
-                val sesssionID = if(session != null) {
-                    session.id
-                }
-                else{
-                    "nosession"
-                }
-
                 if(logger.isDebugEnabled) {
+                    val httpServletRequest = servletRequest as HttpServletRequest
+                    val session = httpServletRequest.getSession(false)
+                    val sesssionID = if(session != null) {
+                        session.id
+                    }
+                    else{
+                        "nosession"
+                    }
+
                     logger.debug(
                         "Старт цепочки фильтров. " +
                                 "${httpServletRequest.requestURL}${httpServletRequest.queryString ?: ""} " +
@@ -77,11 +77,10 @@ class SecurityConfig : VaadinWebSecurity() {
                 filterChain.doFilter(servletRequest, servletResponse)
             }, DisableEncodeUrlFilter::class.java)
             .addFilterAfter({ servletRequest, servletResponse, filterChain ->
-                if(SecurityContextHolder.getContext().authentication != null) {
-                    if(logger.isDebugEnabled) {
-                        logger.debug("После сохранения аутентификации в threadLocal ${SecurityContextHolder.getContext().authentication} ${Thread.currentThread().name}")
-                    }
+                if(logger.isDebugEnabled && SecurityContextHolder.getContext().authentication != null) {
+                    logger.debug("После сохранения аутентификации в threadLocal ${SecurityContextHolder.getContext().authentication} ${Thread.currentThread().name}")
                 }
+
                 filterChain.doFilter(servletRequest, servletResponse)
             }, SecurityContextHolderAwareRequestFilter::class.java)
             .addFilterAfter({ servletRequest, servletResponse, filterChain ->
@@ -125,6 +124,14 @@ class SecurityConfig : VaadinWebSecurity() {
     @Bean
     fun commentsWebClient(): WebClient {
         val builder = WebClient.builder()
+        builder.baseUrl("http://localhost:9081")
+        return builder.build()
+    }
+
+    @Bean
+    fun usersWebClient(): WebClient {
+        val builder = WebClient.builder()
+        builder.baseUrl("http://127.0.0.2:9000/api/v1/auth")
         return builder.build()
     }
 }

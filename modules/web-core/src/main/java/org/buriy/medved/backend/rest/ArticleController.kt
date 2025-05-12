@@ -19,7 +19,6 @@ class ArticleController(
     }
     @GetMapping("/list")
     fun getList(): Array<String> {
-        println("!!!IN CONTROLLER ${SecurityContextHolder.getContext().getAuthentication()}")
         return arrayOf("name_one", "name_two", "name_three")
     }
 }
