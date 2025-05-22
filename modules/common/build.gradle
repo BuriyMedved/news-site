@@ -26,10 +26,20 @@ noArg {
     annotation("org.buriy.medved.backend.common.NoArg")
 }
 
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Embeddable")
+    annotation("jakarta.persistence.ElementCollection")
+}
+
 dependencies {
     implementation "org.apache.groovy:groovy:${groovyVersion}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
+
+    implementation "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
 }
 
 kotlin {

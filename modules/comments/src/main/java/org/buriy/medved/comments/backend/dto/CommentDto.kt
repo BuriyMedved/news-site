@@ -1,5 +1,6 @@
 package org.buriy.medved.comments.backend.dto
 
+import org.buriy.medved.backend.dto.BaseDto
 import java.time.LocalDateTime
 import java.util.*
 

@@ -3,6 +3,7 @@ package org.buriy.medved.comments.backend.entities
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
+import org.buriy.medved.backend.entities.BaseEntity
 import java.time.LocalDateTime
 import java.util.*
 

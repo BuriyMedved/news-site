@@ -1,4 +1,4 @@
-package org.buriy.medved.comments.backend.entities
+package org.buriy.medved.backend.entities
 
 import jakarta.persistence.*
 import org.springframework.data.domain.Persistable
@@ -27,7 +27,7 @@ class BaseEntity : Persistable<UUID> {
         return id.hashCode()
     }
 
-    override fun getId(): UUID? {
+    override fun getId(): UUID {
         return id
     }
 

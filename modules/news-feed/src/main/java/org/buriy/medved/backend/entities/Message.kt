@@ -4,12 +4,10 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
 import java.time.LocalDateTime
-import java.util.*
 
 @Entity
 @Table(name = "z_message")
 data class Message(
-    override var id: UUID,
     @Column(name = "z_text", nullable = false, length = 2048)
     var text: String,
     @Column(name = "z_publish_time", nullable = false)

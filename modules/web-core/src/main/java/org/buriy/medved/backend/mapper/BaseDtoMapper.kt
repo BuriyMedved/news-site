@@ -7,4 +7,5 @@ import org.mapstruct.Mapper
 @Mapper(uses = [ArticleMapper::class])
 interface BaseDtoMapper {
     fun toBaseDto(entity: BaseEntity): BaseDto
+    fun toBaseEntity(dto: BaseDto): BaseEntity
 }
