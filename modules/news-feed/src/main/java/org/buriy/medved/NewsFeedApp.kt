@@ -1,10 +1,10 @@
-package org.buriy.medved.comments
+package org.buriy.medved
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class Application
+class NewsFeedApp
     fun main(args: Array<String>) {
-        runApplication<Application>(*args)
+        runApplication<NewsFeedApp>(*args)
     }
