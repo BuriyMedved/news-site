@@ -9,23 +9,27 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.http.MediaType
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
+import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer
 import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
+import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import java.util.*
 import kotlin.collections.ArrayList
@@ -39,7 +43,7 @@ class SecurityConfig(
     private val userService: UserService,
 ) {
     companion object{
-        val logger = LoggerFactory.getLogger(SecurityConfig::class.java)
+        private val logger = LoggerFactory.getLogger(SecurityConfig::class.java)
     }
     @Value("\${spring.websecurity.debug:false}")
     var webSecurityDebug: Boolean = false
@@ -48,41 +52,31 @@ class SecurityConfig(
     @Order(1)
     @Throws(Exception::class)
     fun authorizationServerSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http)
-        http.getConfigurer(OAuth2AuthorizationServerConfigurer::class.java)
-            .oidc(Customizer.withDefaults()) // Enable OpenID Connect 1.0
+        val authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer()
+
+        http
+            .securityMatcher(authorizationServerConfigurer.endpointsMatcher)
+            .with(
+                authorizationServerConfigurer
+            ) { authorizationServer: OAuth2AuthorizationServerConfigurer ->
+                authorizationServer.oidc(Customizer.withDefaults())
+            } // Enable OpenID Connect 1.0
+
+            .authorizeHttpRequests{ authorize ->
+                authorize.anyRequest().authenticated()
+            }
+            //Redirect to the OAuth 2.0 Login endpoint when not authenticated
+            //from the authorization endpoint
+            .exceptionHandling { exceptions: ExceptionHandlingConfigurer<HttpSecurity?> ->
+                exceptions
+                    .defaultAuthenticationEntryPointFor(
+                        LoginUrlAuthenticationEntryPoint("/login"),
+                        MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+                    )
+            }
+
         return http.formLogin(Customizer.withDefaults()).build()
     }
-
-//    @Bean
-//    @Order(1)
-//    @Throws(Exception::class)
-//    fun authorizationServerSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
-//        val authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer()
-//
-//        http
-//            .securityMatcher(authorizationServerConfigurer.endpointsMatcher)
-//            .with(
-//                authorizationServerConfigurer
-//            ) { authorizationServer: OAuth2AuthorizationServerConfigurer ->
-//                authorizationServer.oidc(Customizer.withDefaults())
-//            } // Enable OpenID Connect 1.0
-//
-//            .authorizeHttpRequests{ authorize ->
-//                authorize.anyRequest().authenticated()
-//            }
-//             // Redirect to the OAuth 2.0 Login endpoint when not authenticated
-//            // from the authorization endpoint
-//            .exceptionHandling { exceptions: ExceptionHandlingConfigurer<HttpSecurity?> ->
-//                exceptions
-//                    .defaultAuthenticationEntryPointFor(
-//                        LoginUrlAuthenticationEntryPoint("/oauth2/authorization/my-client"),
-//                        MediaTypeRequestMatcher(MediaType.TEXT_HTML)
-//                    )
-//            }
-//
-//        return http.build()
-//    }
 
     @Bean
     fun jwtTokenCustomizer(): OAuth2TokenCustomizer<JwtEncodingContext> {
@@ -159,8 +153,8 @@ class SecurityConfig(
         userService.findAll(true).forEach { user ->
             val userDetails: UserDetails = User.builder()
                 .username(user.login)
+                //пароли уже зашифрованы в базе, тут не нужно дополнительно кодировать
                 .password(user.password)
-//                .passwordEncoder { rawPassword: CharSequence? -> encoder.encode(rawPassword) }
                 .roles(*user.roles.toTypedArray())
                 .build()
             mutableList.add(userDetails)
@@ -173,4 +167,9 @@ class SecurityConfig(
     fun webSecurityCustomizer(): WebSecurityCustomizer {
         return WebSecurityCustomizer { web: WebSecurity -> web.debug(webSecurityDebug) }
     }
+
+    @Bean
+	fun authorizationServerSettings(): AuthorizationServerSettings {
+		return AuthorizationServerSettings.builder().build()
+	}
 }
