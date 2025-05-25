@@ -8,4 +8,6 @@ import java.util.*
 
 @Repository
 interface UserRepository: JpaRepository<User, UUID>, JpaSpecificationExecutor<User> {
+    fun findUserByIdIsIn(ids: Collection<UUID>): List<User>
+    fun findByLogin(login: String): Optional<User>
 }

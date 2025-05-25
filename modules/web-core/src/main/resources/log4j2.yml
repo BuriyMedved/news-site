@@ -81,6 +81,11 @@ Configuration:
         additivity: false
         AppenderRef:
           - ref: LogToConsole
+      - name: org.buriy.medved.frontend.article.SingleArticleView
+        level: debug
+        additivity: false
+        AppenderRef:
+          - ref: LogToConsole
 #      - name: org.hibernate
 #        level: debug
 #        additivity: false

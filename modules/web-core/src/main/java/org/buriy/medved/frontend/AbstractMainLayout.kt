@@ -17,6 +17,7 @@ import com.vaadin.flow.component.tabs.TabsVariant
 import com.vaadin.flow.router.HasDynamicTitle
 import com.vaadin.flow.router.RouterLink
 import com.vaadin.flow.spring.security.AuthenticationContext
+import org.buriy.medved.backend.security.SecurityTools
 import org.vaadin.lineawesome.LineAwesomeIcon
 import java.util.*
 
@@ -29,7 +30,6 @@ abstract class AbstractMainLayout(
 ) : AppLayout(), HasDynamicTitle {
     private val menu: Tabs
     private var viewTitle: H1? = null
-    private val anonymous = "Аноним"
 
     init {
         // Use the drawer for the menu
@@ -65,12 +65,8 @@ abstract class AbstractMainLayout(
 
         // A user icon
 //        layout.add(Image("img/user.svg", "Avatar"))
-        val authenticated = authenticationContext.isAuthenticated
-        val userName = if (authenticated && authenticationContext.principalName.isPresent) {
-            authenticationContext.principalName.get()
-        } else {
-            anonymous
-        }
+
+        val userName = SecurityTools.getUserName(authenticationContext)
 
         val userInfo = Span()
         userInfo.add(LineAwesomeIcon.USER_SOLID.create())

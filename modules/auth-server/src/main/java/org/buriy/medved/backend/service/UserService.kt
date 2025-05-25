@@ -2,7 +2,6 @@ package org.buriy.medved.backend.service
 
 import jakarta.transaction.Transactional
 import org.buriy.medved.backend.dto.UserDto
-import org.buriy.medved.backend.entities.Role
 import org.buriy.medved.backend.entities.RoleToUserCross
 import org.buriy.medved.backend.mapper.UserMapper
 import org.buriy.medved.backend.repository.RoleRepository
@@ -21,6 +20,7 @@ class UserService(
     private val roleToUserCrossRepository: RoleToUserCrossRepository,
     private val userMapper: UserMapper,
 ) {
+    @Transactional
     fun findById(id: UUID): Optional<UserDto> {
         val userOptional = userRepository.findById(id)
         if(userOptional.isEmpty) {
@@ -33,6 +33,20 @@ class UserService(
         userDto.roles = existingRolesSet
 
         return Optional.of(userDto)
+    }
+
+    @Transactional
+    fun findUserByIdIsIn(ids: List<UUID>): List<UserDto>{
+        return userRepository.findUserByIdIsIn(ids).map { user ->
+            userMapper.toDto(user)
+        }
+    }
+
+    @Transactional
+    fun findUserByLogin(login: String): Optional<UserDto> {
+        return userRepository.findByLogin(login).map { user ->
+            userMapper.toDto(user)
+        }
     }
 
     @Transactional

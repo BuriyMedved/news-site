@@ -19,7 +19,6 @@ import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer
@@ -111,11 +110,17 @@ class SecurityConfig(
                     userRolesCommaSeparated = userRolesCommaSeparated.substring(0, userRolesCommaSeparated.length - 1)
                 }
 
+                val principal = context.getPrincipal<UsernamePasswordAuthenticationToken>()
                 if(logger.isDebugEnabled){
-                    logger.debug("Пользователь: ${context.getPrincipal<UsernamePasswordAuthenticationToken>()} Роли: $userRolesCommaSeparated")
+                    logger.debug("Пользователь: $principal Роли: $userRolesCommaSeparated")
                 }
+
                 context.claims.claims { claims: MutableMap<String?, Any?> ->
                     claims["user-roles"] = userRolesCommaSeparated
+                    val userDtoOptional = userService.findUserByLogin(principal.name)
+                    if (userDtoOptional.isPresent) {
+                        claims["user-id"] = userDtoOptional.get().id
+                    }
                 }
             }
         }
@@ -149,20 +154,6 @@ class SecurityConfig(
             val role = Role(entry.value)
             roleRepository.save(role)
         }
-
-        val encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
-//        val user: UserDetails = User.builder()
-//            .username("user")
-//            .password("12345678")
-//            .passwordEncoder { rawPassword: CharSequence? -> encoder.encode(rawPassword) }
-//            .build()
-//
-//        val premium: UserDetails = User.builder()
-//            .username("prem")
-//            .password("12345678")
-//            .passwordEncoder { rawPassword: CharSequence? -> encoder.encode(rawPassword) }
-//            .roles(RolesNames.ARTICLES_READ.value)
-//            .build()
 
         val mutableList = ArrayList<UserDetails>()
         userService.findAll(true).forEach { user ->

@@ -1,7 +1,6 @@
 package org.buriy.medved.comments.backend.service
 
-import jakarta.transaction.Transactional
-import org.buriy.medved.comments.backend.dto.CommentDto
+import org.buriy.medved.backend.dto.CommentDto
 import org.buriy.medved.comments.backend.dto.CommentSearchDto
 import org.buriy.medved.comments.backend.mapper.CommentMapper
 import org.buriy.medved.comments.backend.repository.CommentRepository

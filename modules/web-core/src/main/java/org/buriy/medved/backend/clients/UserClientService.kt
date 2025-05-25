@@ -18,6 +18,32 @@ class UserClientService(
         private val logger = LoggerFactory.getLogger(UserClientService::class.java)
     }
 
+
+    fun findBulk(
+        uuidList: List<UUID>,
+        loadListener: (t: UserDto) -> Unit,
+        onComplete: Runnable
+    ) {
+        val uriBuilderFunction: (t: UriBuilder) -> URI =
+            { builder ->
+                builder.path("/users/bulk").build()
+            }
+        val ids = uuidList.map { uuid -> uuid.toString() }.toTypedArray()
+        usersWebClient
+            .post()
+            .uri(uriBuilderFunction)
+            .bodyValue(ids)
+            .retrieve()
+            .bodyToFlux(UserDto::class.java)
+            .onErrorResume { e ->
+                logger.debug("Не удалось подключиться", e)
+                Flux.just()
+            }
+            .doOnComplete(onComplete)
+            .subscribe(loadListener)
+    }
+
+
     fun findAll(
         loadListener: (t: UserDto) -> Unit,
         onComplete: Runnable

@@ -15,9 +15,13 @@ import com.vaadin.flow.router.BeforeEnterEvent
 import com.vaadin.flow.router.BeforeEnterObserver
 import com.vaadin.flow.router.HasDynamicTitle
 import com.vaadin.flow.router.Route
+import jakarta.annotation.security.RolesAllowed
 import org.buriy.medved.backend.clients.CommentsClientService
+import org.buriy.medved.backend.clients.UserClientService
 import org.buriy.medved.backend.dto.ArticleDto
 import org.buriy.medved.backend.dto.CommentDto
+import org.buriy.medved.backend.dto.UserDto
+import org.buriy.medved.backend.security.SecurityTools
 import org.buriy.medved.backend.service.ArticleService
 import org.buriy.medved.frontend.MainLayout
 import org.buriy.medved.frontend.components.Divider
@@ -30,9 +34,11 @@ import java.util.*
 @Route(value = "article/:id", layout = MainLayout::class)
 @CssImport(value = "./styles/components/articles-layout.css")
 @CssImport(value = "./styles/components/common.css")
+@RolesAllowed("articles.read")
 class SingleArticleView(
     private val articleService: ArticleService,
-    private val commentsClientService: CommentsClientService
+    private val commentsClientService: CommentsClientService,
+    private val userClientService: UserClientService,
 ): VerticalLayout(), BeforeEnterObserver, HasDynamicTitle {
 
     companion object{
@@ -78,28 +84,66 @@ class SingleArticleView(
     }
 
     private fun addCommentsList(articleDto: ArticleDto) {
-        val commentsDataList = Collections.synchronizedList(ArrayList<MessageListItem>())
+        val commentsDataList = Collections.synchronizedList(ArrayList<CommentDto>())
+        val usersDataList = Collections.synchronizedList(ArrayList<UserDto>())
+
         val commentsList = MessageList()
 
         val currentUI = UI.getCurrent()
-        val onComplete: () -> Unit = {
+
+        val userLoadListener: (UserDto) -> Unit = { userDto ->
+            usersDataList.add(userDto)
+        }
+
+        val onUsersComplete: () -> Unit = {
             try {
+                val userDataMap = HashMap<UUID, UserDto>()
+
+                usersDataList.forEach { userDto ->
+                    userDataMap[userDto.id] = userDto
+                }
+
+                if(logger.isDebugEnabled){
+                    logger.debug("Загружено ${usersDataList.size} пользователей")
+                }
+
+                val messageIemList = ArrayList<MessageListItem>()
+
+                commentsDataList.forEach{commentDto ->
+                    val userDto = userDataMap[commentDto.userPtr] ?: return@forEach
+
+                    val comment = MessageListItem(
+                        commentDto.text,
+                        commentDto.publishTime.toInstant(ZoneOffset.UTC),
+                        userDto.name
+                    )
+                    messageIemList.add(comment)
+                }
+
                 currentUI.access {
-                    commentsList.setItems(commentsDataList)
+                    commentsList.setItems(messageIemList)
                 }
             } catch (e: Exception) {
                 logger.debug("Пользовательский интерфейс не доступен ${e.message}")
             }
         }
-        val function: (CommentDto) -> Unit = { commentDto: CommentDto ->
-            val comment = MessageListItem(
-                commentDto.text,
-                commentDto.publishTime.toInstant(ZoneOffset.UTC),
-                "Matt Mambo"
-            )
-            commentsDataList.add(comment)
+
+        val onCommentsComplete: () -> Unit = {
+            val commentsAuthors = commentsDataList.map { commentDto ->
+                commentDto.userPtr
+            }.toList()
+
+            if(logger.isDebugEnabled) {
+                logger.debug("Загружено ${commentsDataList.size} комментариев. Авторов: ${commentsAuthors.size} ")
+            }
+
+            userClientService.findBulk(commentsAuthors, userLoadListener, onUsersComplete)
         }
-        commentsClientService.loadComments(articleDto, function, onComplete)
+
+        val commentLoadListener: (CommentDto) -> Unit = { commentDto: CommentDto ->
+            commentsDataList.add(commentDto)
+        }
+        commentsClientService.loadComments(articleDto, commentLoadListener, onCommentsComplete)
 
         add(commentsList)
     }
@@ -111,7 +155,8 @@ class SingleArticleView(
         val saveCommentButton = Button()
         saveCommentButton.text = commentButtonText
         saveCommentButton.addClickListener { _ ->
-            val commentDto = CommentDto(UUID.randomUUID(), textArea.value, LocalDateTime.now(), articleDto.id)
+            val userID = SecurityTools.getUserID()
+            val commentDto = CommentDto(UUID.randomUUID(), textArea.value, LocalDateTime.now(), articleDto.id, UUID.fromString(userID))
             commentsClientService.save(commentDto) { _: Void -> println("SUCCESS") }
         }
 

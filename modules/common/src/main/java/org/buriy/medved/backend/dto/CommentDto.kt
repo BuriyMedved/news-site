@@ -8,6 +8,7 @@ data class CommentDto(
     var text: String,
     var publishTime: LocalDateTime,
     var articlePtr: UUID,
+    var userPtr: UUID,
 ): BaseDto(id) {
     override fun equals(other: Any?): Boolean {
         return super.equals(other)

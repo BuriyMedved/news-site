@@ -4,7 +4,6 @@ import org.buriy.medved.backend.dto.UserDto
 import org.buriy.medved.backend.service.UserService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -26,6 +25,12 @@ class UserController(
             return ResponseEntity.ok(optional.get())
         }
         return ResponseEntity.notFound().build()
+    }
+
+    @PostMapping("/users/bulk")
+    fun getByIdBulk(@RequestBody ids: Array<String>) : List<UserDto> {
+        val uuidList = listOf(*ids).map { idString ->  UUID.fromString(idString) }
+        return userService.findUserByIdIsIn(uuidList)
     }
 
     @GetMapping("/users")
