@@ -11,6 +11,8 @@ import com.vaadin.flow.component.messages.MessageListItem
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextArea
+import com.vaadin.flow.component.textfield.TextArea.TextAreaI18n
+import com.vaadin.flow.data.binder.Binder
 import com.vaadin.flow.router.BeforeEnterEvent
 import com.vaadin.flow.router.BeforeEnterObserver
 import com.vaadin.flow.router.HasDynamicTitle
@@ -50,6 +52,9 @@ class SingleArticleView(
     private val commentButtonText = "Добавить комментарий"
     private val commentButtonLabel = "Ваш комментарий"
     private val commentTextPlaceholder = "Текст комментария"
+    private val emptyCommentField = "Введите комментарий"
+
+    private val binder: Binder<CommentDto> = Binder(CommentDto::class.java)
 
     init{
         add(horizontalLayout)
@@ -152,11 +157,18 @@ class SingleArticleView(
         val textArea = TextArea(commentButtonLabel, commentTextPlaceholder)
         textArea.setWidthFull()
 
+        binder.forField(textArea)
+            .asRequired(emptyCommentField)
+            .bind(CommentDto::text, CommentDto::text.setter)
+
         val saveCommentButton = Button()
         saveCommentButton.text = commentButtonText
         saveCommentButton.addClickListener { _ ->
             val userID = SecurityTools.getUserID()
             val commentDto = CommentDto(UUID.randomUUID(), textArea.value, LocalDateTime.now(), articleDto.id, UUID.fromString(userID))
+
+            binder.writeBean(commentDto)
+
             commentsClientService.save(commentDto) { _: Void -> println("SUCCESS") }
         }
 
