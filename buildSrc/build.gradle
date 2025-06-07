@@ -1,0 +1,26 @@
+plugins {
+    id 'groovy-gradle-plugin'
+}
+
+repositories {
+    gradlePluginPortal()
+}
+
+file("${rootDir.parentFile}/gradle.properties").withReader {
+    Properties props = new Properties()
+    props.load(it)
+    project.ext.myProps = props
+}
+
+dependencies {
+    implementation("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:${myProps.kotlinVersion}")
+    implementation("org.springframework.boot:org.springframework.boot.gradle.plugin:${myProps.springBootVersion}")
+    implementation("io.spring.dependency-management:io.spring.dependency-management.gradle.plugin:${myProps.springDmVersion}")
+    implementation("org.jetbrains.kotlin.kapt:org.jetbrains.kotlin.kapt.gradle.plugin:${myProps.kotlinVersion}")
+    implementation("org.jetbrains.kotlin.plugin.jpa:org.jetbrains.kotlin.plugin.jpa.gradle.plugin:${myProps.kotlinVersion}")
+    implementation("org.jetbrains.kotlin.plugin.spring:org.jetbrains.kotlin.plugin.spring.gradle.plugin:${myProps.kotlinVersion}")
+    implementation("org.jetbrains.kotlin.plugin.allopen:org.jetbrains.kotlin.plugin.allopen.gradle.plugin:${myProps.kotlinVersion}")
+}
+
+
+

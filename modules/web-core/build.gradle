@@ -1,35 +1,10 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-}
-
 plugins {
-    id "java"
-    id "org.springframework.boot" version "${springBootVersion}"
+    id("java-common-conventions")
     id "com.vaadin"
-    id "io.spring.dependency-management" version "${springDmVersion}"
-    id("org.jetbrains.kotlin.jvm") version "${kotlinVersion}"
-//    id 'kotlin'
-    id("org.jetbrains.kotlin.plugin.jpa") version "${kotlinVersion}"
-    id("org.jetbrains.kotlin.plugin.spring") version "${kotlinVersion}"
-    id("org.jetbrains.kotlin.plugin.allopen") version "${kotlinVersion}"
-    id "org.jetbrains.kotlin.kapt" version "${kotlinVersion}"
-//    id "org.jetbrains.kotlin.plugin.noarg" version "${kotlinVersion}"
 }
 
 group = 'org.buriy.medved'
 version = '1.0.0'
-
-repositories {
-    mavenCentral()
-    gradlePluginPortal()
-}
-
-java {
-    targetCompatibility = 20
-    sourceCompatibility = 20
-}
 
 noArg {
     annotation("org.buriy.medved.backend.common.NoArg")
@@ -103,10 +78,3 @@ kotlin {
     jvmToolchain(20)
 }
 
-//tasks.test{
-//    useJUnitPlatform()
-//}
-
-test {
-    useJUnitPlatform()
-}
