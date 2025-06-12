@@ -36,10 +36,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
     implementation project(':modules:common')
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
-    }
 }
 
 configurations.configureEach {

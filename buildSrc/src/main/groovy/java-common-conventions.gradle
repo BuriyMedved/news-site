@@ -19,7 +19,10 @@ repositories {
     gradlePluginPortal()
 }
 
-
+dependencies {
+    testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
 
 test {
     useJUnitPlatform()

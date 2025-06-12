@@ -26,10 +26,6 @@ dependencies {
     implementation "org.apache.groovy:groovy:${groovyVersion}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
-    }
 }
 
 configurations.configureEach {

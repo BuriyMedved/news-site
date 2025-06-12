@@ -29,6 +29,9 @@ class UserController(
 
     @PostMapping("/users/bulk")
     fun getByIdBulk(@RequestBody ids: Array<String>) : List<UserDto> {
+        if(ids.isEmpty()){
+            return emptyList()
+        }
         val uuidList = listOf(*ids).map { idString ->  UUID.fromString(idString) }
         return userService.findUserByIdIsIn(uuidList)
     }

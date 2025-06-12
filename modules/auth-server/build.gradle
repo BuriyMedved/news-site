@@ -5,6 +5,10 @@ plugins {
 group = 'org.buriy.medved'
 version = '1.0.0'
 
+noArg {
+    annotation("org.buriy.medved.backend.common.NoArg")
+}
+
 allOpen {
     annotation("jakarta.persistence.Entity")
     annotation("jakarta.persistence.MappedSuperclass")
@@ -35,10 +39,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
     implementation project(':modules:common')
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
-    }
 }
 
 configurations.configureEach {
