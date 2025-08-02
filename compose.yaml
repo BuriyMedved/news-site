@@ -1,0 +1,36 @@
+name: news-site
+
+services:
+  auth-server:
+    build:
+      context: modules/auth-server
+    depends_on:
+      - base
+      - postgres
+#    networks:
+#      static-network:
+#        ipv4_address: 172.20.128.1
+    ports:
+      - "9000:9000"
+  base:
+      build:
+        context: buildSrc
+  postgres:
+    image: postgres:17.5
+    env_file: ".env/pg.env"
+#    networks:
+#      static-network:
+#        ipv4_address: 172.20.128.2
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+#######################################
+volumes:
+  postgres_data:
+
+#######################################
+#networks:
+#  static-network:
+#    ipam:
+#      config:
+#        - subnet: 172.20.0.0/16

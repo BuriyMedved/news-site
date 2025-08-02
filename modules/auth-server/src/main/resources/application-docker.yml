@@ -1,0 +1,13 @@
+server:
+  port: 9000
+  address: news-site-auth-server-1
+
+postgres:
+  port: 5432
+spring:
+  datasource:
+    url: jdbc:postgresql://news-site-postgres-1:${postgres.port}/users
+  security:
+    oauth2:
+      authorizationserver:
+        issuer: http://news-site-auth-server-1:9000

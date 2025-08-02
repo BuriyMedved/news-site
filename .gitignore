@@ -41,3 +41,6 @@ out
 pnpmfile.js
 .npmrc
 modules/web-core/src/main/frontend/generated
+
+###Docker###
+.env
