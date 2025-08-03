@@ -5,8 +5,8 @@ postgres:
   port: 5432
 
 spring:
-  profiles:
-    active: noSecurity
+#  profiles:
+#    active: noSecurity
   datasource:
     url: jdbc:postgresql://localhost:${postgres.port}/comments
     username: postgres

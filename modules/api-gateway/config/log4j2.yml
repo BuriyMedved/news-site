@@ -1,10 +1,9 @@
-
 Configuration:
 
   properties:
     Property:
       - name: "LOG_PATH"
-        value: "./logs/auth-server"
+        value: "./logs/api-gateway"
       - name: "LOG_LIFE_TIME"
         value: "30d"
 
