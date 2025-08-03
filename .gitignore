@@ -44,3 +44,6 @@ modules/web-core/src/main/frontend/generated
 
 ###Docker###
 .env
+
+###Develop files and directories###
+dev-config

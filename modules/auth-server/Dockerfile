@@ -7,5 +7,6 @@ ENV JAVA_HOME=/usr/news-site/openjdk-24.0.1/jdk-24.0.1
 ENV PATH=$PATH:$JAVA_HOME/bin
 
 ADD build/libs/auth-server-1.0.0.jar .
+ADD config ./config
 
 ENTRYPOINT ["/usr/news-site/openjdk-24.0.1/jdk-24.0.1/bin/java", "-Dspring.profiles.active=docker", "-jar", "auth-server-1.0.0.jar"]

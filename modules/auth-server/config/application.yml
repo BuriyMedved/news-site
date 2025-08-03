@@ -2,6 +2,10 @@ server:
   port: 9000
   address: 127.0.0.2
 
+logging:
+  config: >-
+    file:./config/log4j2.yml
+
 postgres:
   port: 5432
 spring:

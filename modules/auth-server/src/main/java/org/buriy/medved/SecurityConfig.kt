@@ -52,6 +52,7 @@ class SecurityConfig(
     @Order(1)
     @Throws(Exception::class)
     fun authorizationServerSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        logger.info("Configuring authorization server security")
         val authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer()
 
         http
